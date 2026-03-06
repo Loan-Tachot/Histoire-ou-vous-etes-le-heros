@@ -44,7 +44,7 @@ CREATE TABLE personnage(
 
 CREATE TABLE histoire(
    Id_histoire INT AUTO_INCREMENT,
-   text VARCHAR(1000),
+   texte_histoire VARCHAR(1000),
    Id_Amelioration INT NOT NULL,
    PRIMARY KEY(Id_histoire),
    FOREIGN KEY(Id_Amelioration) REFERENCES Amelioration(Id_Amelioration)
