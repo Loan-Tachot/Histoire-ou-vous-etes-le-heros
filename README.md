@@ -1,2 +1,2 @@
 # Histoire-ou-vous-etes-le-heros
-proge slam annee 1
+projet slam annee 1
