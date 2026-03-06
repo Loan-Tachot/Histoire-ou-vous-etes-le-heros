@@ -1,71 +1,68 @@
+
+Ip 192.168.56.200
+operateur/ Bonk
+
 CREATE TABLE Classe(
-   id INT,
+   id INT AUTO_INCREMENT,
    Nom_classe VARCHAR(50) NOT NULL,
    Element_ VARCHAR(50),
    Arme VARCHAR(50) NOT NULL,
    PRIMARY KEY(id)
-);
+) ENGINE=InnoDB;
 
 CREATE TABLE Objet(
-   id INT,
+   id INT AUTO_INCREMENT,
    Label VARCHAR(50) NOT NULL,
    Effet VARCHAR(50),
    PRIMARY KEY(id)
-);
+) ENGINE=InnoDB;
 
-CREATE TABLE histoire(
-   Id_histoire COUNTER,
-   text VARCHAR(1000),
-   PRIMARY KEY(Id_histoire)
-);
-
-CREATE TABLE PNJ(
-   Id_PNJ COUNTER,
-   Etat_actuel VARCHAR(100) NOT NULL,
-   id INT NOT NULL,
-   PRIMARY KEY(Id_PNJ),
-   FOREIGN KEY(id) REFERENCES Classe(id)
-);
+CREATE TABLE Amelioration(
+   Id_Amelioration INT AUTO_INCREMENT,
+   bonus_PV INT,
+   bonus_Force INT,
+   bonus_Agi INT,
+   Bonus_PM INT,
+   bonus_Puissance INT,
+   Bonus_Argent INT,
+   PRIMARY KEY(Id_Amelioration)
+) ENGINE=InnoDB;
 
 CREATE TABLE personnage(
-   Id INT,
-   Nom VARCHAR(50) NOT NULL,
-   PV INT NOT NULL,
-   Force INT NOT NULL,
-   Agilité INT NOT NULL,
-   PM INT NOT NULL,
-   Puissance INT NOT NULL,
-   argent INT NOT NULL,
-   Compteur_de_dodo COUNTER NOT NULL,
+   Id INT AUTO_INCREMENT,
+   PV_base INT NOT NULL,
+   Force_base INT NOT NULL,
+   Agilite_base INT NOT NULL,
+   PM_base INT NOT NULL,
+   Puissance_base INT NOT NULL,
+   argent_base INT NOT NULL,
    id_1 INT NOT NULL,
    PRIMARY KEY(Id),
    UNIQUE(id_1),
    FOREIGN KEY(id_1) REFERENCES Classe(id)
-);
+) ENGINE=InnoDB;
 
-CREATE TABLE Inventaire(
-   Id INT,
-   id_1 INT,
-   Nb_objet INT NOT NULL,
-   PRIMARY KEY(Id, id_1),
-   FOREIGN KEY(Id) REFERENCES personnage(Id),
-   FOREIGN KEY(id_1) REFERENCES Objet(id)
-);
+CREATE TABLE histoire(
+   Id_histoire INT AUTO_INCREMENT,
+   text VARCHAR(1000),
+   Id_Amelioration INT NOT NULL,
+   PRIMARY KEY(Id_histoire),
+   FOREIGN KEY(Id_Amelioration) REFERENCES Amelioration(Id_Amelioration)
+) ENGINE=InnoDB;
 
-CREATE TABLE déboucher(
+CREATE TABLE Deboucher(
+   Id_Deboucher INT AUTO_INCREMENT,
+   choix VARCHAR(50),
+   Id_histoire INT NOT NULL,
+   PRIMARY KEY(Id_Deboucher),
+   FOREIGN KEY(Id_histoire) REFERENCES histoire(Id_histoire)
+) ENGINE=InnoDB;
+
+CREATE TABLE obtenue(
+   id INT,
    Id_histoire INT,
-   Id_histoire_1 INT,
-   Text VARCHAR(50),
-   PRIMARY KEY(Id_histoire, Id_histoire_1),
-   FOREIGN KEY(Id_histoire) REFERENCES histoire(Id_histoire),
-   FOREIGN KEY(Id_histoire_1) REFERENCES histoire(Id_histoire)
-);
+   PRIMARY KEY(id, Id_histoire),
+   FOREIGN KEY(id) REFERENCES Objet(id),
+   FOREIGN KEY(Id_histoire) REFERENCES histoire(Id_histoire)
+) ENGINE=InnoDB;
 
-CREATE TABLE Relation(
-   Id INT,
-   Id_PNJ INT,
-   relation_avec_pp VARCHAR(50),
-   PRIMARY KEY(Id, Id_PNJ),
-   FOREIGN KEY(Id) REFERENCES personnage(Id),
-   FOREIGN KEY(Id_PNJ) REFERENCES PNJ(Id_PNJ)
-);
