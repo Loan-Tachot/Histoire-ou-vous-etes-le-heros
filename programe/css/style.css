@@ -1,28 +1,180 @@
 body{
+    font-family: 'Georgia', serif; /* Police serif pour un air médiéval */
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%); /* Dégradé sombre pour un univers fantasy */
+    color: #ecf0f1; /* Texte blanc crème */
+    text-align: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    background-attachment: fixed;
+}
 
-font-family: Arial;
-background:#111;
-color:white;
-text-align:center;
-
+h1, h2 {
+    color: #f1c40f; /* Or pour les titres */
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5); /* Ombre pour effet 3D */
+    font-weight: bold;
 }
 
 .btn{
+    display: inline-block;
+    padding: 15px 30px;
+    margin: 10px;
+    background: linear-gradient(45deg, #9b59b6, #8e44ad); /* Dégradé violet magique */
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    border: 2px solid #f1c40f; /* Bordure dorée */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
-display:inline-block;
-padding:15px;
-margin:10px;
-background:#3498db;
-color:white;
-text-decoration:none;
-border-radius:5px;
-
+.btn:hover {
+    background: linear-gradient(45deg, #8e44ad, #9b59b6);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+    color: #f1c40f; /* Texte doré au survol */
 }
 
 button{
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+    background: #27ae60; /* Vert forêt pour les boutons */
+    color: white;
+    border: 2px solid #2ecc71;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-family: inherit;
+}
 
-padding:10px;
-margin:10px;
-font-size:16px;
+button:hover {
+    background: #2ecc71;
+}
 
+/* Styles supplémentaires pour la présentation */
+.slide {
+    border: 3px solid #f1c40f;
+    background: rgba(52, 73, 94, 0.8); /* Fond semi-transparent */
+    box-shadow: 0 0 20px rgba(155, 89, 182, 0.5); /* Aura violette */
+}
+
+.nav-buttons button {
+    background: #e74c3c; /* Rouge pour les boutons de navigation */
+    border: 2px solid #c0392b;
+}
+
+.nav-buttons button:hover {
+    background: #c0392b;
+}
+
+/* Pied de page */
+footer {
+    margin-top: 40px;
+    color: #bdc3c7;
+    font-style: italic;
+}
+
+/* Liens */
+a {
+    color: #3498db;
+}
+
+a:hover {
+    color: #5dade2;
+}
+
+/* Listes */
+ul {
+    list-style: none; /* Supprimer les puces */
+    padding: 0;
+}
+
+li {
+    /* Par défaut, vertical */
+}
+
+.nav-list li {
+    display: block; /* Vertical pour la navigation */
+    margin: 10px 0;
+}
+
+/* Styles spécifiques à la page d'accueil */
+.accueil-page {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #1a1a2e 100%); /* Dégradé plus sombre pour l'accueil */
+    color: #ecf0f1;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.accueil-page .hero {
+    max-width: 800px;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: rgba(52, 73, 94, 0.8); /* Fond semi-transparent */
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    border: 3px solid #f1c40f;
+}
+
+.accueil-page .hero h1 {
+    font-size: 3em;
+    margin-bottom: 20px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    color: #f1c40f;
+}
+
+.accueil-page .hero p {
+    font-size: 1.2em;
+    line-height: 1.6;
+    color: #bdc3c7;
+}
+
+.accueil-page .main-nav {
+    margin: 20px 0;
+}
+
+.accueil-page .nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.accueil-page .btn {
+    padding: 15px 30px;
+    font-size: 1.1em;
+    transition: all 0.4s ease;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.accueil-page .btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(155, 89, 182, 0.6);
+}
+
+.accueil-page footer {
+    margin-top: auto;
+    color: #7f8c8d;
+    font-style: italic;
+}
+
+.fullscreen-btn {
+    margin-top: 20px;
+    background: #e74c3c;
+    border: 2px solid #c0392b;
+}
+
+.fullscreen-btn:hover {
+    background: #c0392b;
 }

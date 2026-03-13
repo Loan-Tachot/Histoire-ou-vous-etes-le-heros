@@ -1,5 +1,5 @@
 
-Ip 192.168.56.200
+Site histoire-heros.com
 operateur/ Bonk
 
 CREATE TABLE Classe(

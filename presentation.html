@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <title>Présentation du thème fantastique - Histoire où vous êtes le héros</title>
+    <link rel="stylesheet" href="programe/css/style.css">
+    <style>
+        .slide {
+            display: none;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #3498db;
+            border-radius: 10px;
+            background: rgba(52, 152, 219, 0.1);
+        }
+        .slide.active {
+            display: block;
+        }
+        .nav-buttons {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .nav-buttons button {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Présentation du thème fantastique</h1>
+    <p>Découvrez l'univers magique de "Histoire où vous êtes le héros", un jeu de rôle textuel où vous incarnez un héros dans un monde de fantasy épique.</p>
+
+    <div id="slides">
+        <div class="slide active" id="slide1">
+            <h2>Le Monde de Fantasy</h2>
+            <p>Plongez dans un univers médiéval fantastique rempli de créatures mythiques, de magie ancienne et d'aventures sans fin. Votre histoire se déroule dans un royaume où les éléments naturels et la magie coexistent harmonieusement.</p>
+        </div>
+        <div class="slide" id="slide2">
+            <h2>Les Classes de Personnages</h2>
+            <p>Choisissez parmi différentes classes, chacune associée à un élément et une arme spécifique :</p>
+            <ul>
+                <li><strong>Guerrier</strong> : Maître des armes physiques, lié à la terre.</li>
+                <li><strong>Mage</strong> : Manipulateur de la magie, élément du feu.</li>
+                <li><strong>Voleur</strong> : Expert en furtivité, élément de l'air.</li>
+                <li><strong>Prêtre</strong> : Guérisseur spirituel, élément de l'eau.</li>
+            </ul>
+        </div>
+        <div class="slide" id="slide3">
+            <h2>Les Statistiques et l'Évolution</h2>
+            <p>Votre personnage évolue au fil de l'aventure :</p>
+            <ul>
+                <li><strong>PV</strong> : Points de Vie, votre santé.</li>
+                <li><strong>Force</strong> : Puissance physique.</li>
+                <li><strong>Agilité</strong> : Vitesse et dextérité.</li>
+                <li><strong>PM</strong> : Points de Magie.</li>
+                <li><strong>Puissance</strong> : Puissance magique.</li>
+                <li><strong>Argent</strong> : Monnaie pour acheter des objets.</li>
+            </ul>
+        </div>
+        <div class="slide" id="slide4">
+            <h2>Les Objets Magiques</h2>
+            <p>Collectez des objets dotés d'effets spéciaux :</p>
+            <ul>
+                <li>Épées enchantées</li>
+                <li>Potions de soin</li>
+                <li>Artefacts anciens</li>
+                <li>Armures magiques</li>
+            </ul>
+        </div>
+        <div class="slide" id="slide5">
+            <h2>L'Histoire Ramifiée</h2>
+            <p>Vos choix déterminent le déroulement de l'aventure. Chaque décision peut mener à des quêtes épiques, des combats légendaires ou des découvertes mystérieuses. Êtes-vous prêt à devenir le héros de votre propre légende ?</p>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <button onclick="prevSlide()">Précédent</button>
+        <button onclick="nextSlide()">Suivant</button>
+    </div>
+
+    <a class="btn" href="accueil.php">Retour à l'accueil</a>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            slides[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+    </script>
+
+    <footer>
+        <p>&copy; 2026 Projet SLAM, usage éducatif</p>
+    </footer>
+</body>
+</html>
