@@ -32,7 +32,7 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// ── Stats de base du personnage (valeurs initiales) ──────────
+// ── Stats de base ────────────────────────────────────────────
 function statsBase() {
     return array(
         'PV'        => 100,
@@ -44,7 +44,7 @@ function statsBase() {
     );
 }
 
-// ── Calcule les stats en additionnant les bonus des chemins ──
+// ── Recalcule les stats depuis les chemins parcourus ─────────
 function calculerStats($pdo, $chemins) {
     $stats = statsBase();
     if (!$pdo || empty($chemins)) return $stats;
@@ -66,6 +66,36 @@ function calculerStats($pdo, $chemins) {
         $stats['Argent']    += $row['Bonus_Argent'];
     }
     return $stats;
+}
+
+// ── Évalue une condition de stat ─────────────────────────────
+// Formats supportés :
+//   Force>=8        PM<8        Agi>4       PM>Force    Force==PM
+//   nonVisited:26   (caché si histoire 26 déjà visitée)
+function evaluerCondition($condition, $stats) {
+    if (empty($condition)) return true;
+
+    // Condition spéciale : nonVisited:ID — visible seulement si pas encore visité
+    if (strpos($condition, 'nonVisited:') === 0) {
+        $idHistoire = (int) substr($condition, strlen('nonVisited:'));
+        $chemins    = isset($_SESSION['chemins']) ? $_SESSION['chemins'] : array();
+        return !in_array($idHistoire, $chemins);
+    }
+
+    // Remplacer les noms de stats par leurs valeurs
+    $expr = $condition;
+    $expr = str_replace('Puissance', $stats['Puissance'], $expr);
+    $expr = str_replace('Agilite',   $stats['Agilite'],   $expr);
+    $expr = str_replace('Argent',    $stats['Argent'],     $expr);
+    $expr = str_replace('Force',     $stats['Force'],      $expr);
+    $expr = str_replace('PM',        $stats['PM'],         $expr);
+    $expr = str_replace('PV',        $stats['PV'],         $expr);
+
+    // Sécurité : n'autoriser que chiffres et opérateurs
+    if (!preg_match('/^[\d\s<>=!]+$/', $expr)) return false;
+
+    // Évaluer l'expression
+    return eval("return ($expr);");
 }
 
 // ── Histoire ─────────────────────────────────────────────────
@@ -97,7 +127,9 @@ class Deboucher {
 
     public function getBySource($sourceId) {
         if (!$this->pdo) return array();
-        $s = $this->pdo->prepare("SELECT * FROM Deboucher WHERE Id_histoire_source = ?");
+        $s = $this->pdo->prepare(
+            "SELECT * FROM Deboucher WHERE Id_histoire_source = ? ORDER BY Id_Deboucher ASC"
+        );
         $s->execute(array($sourceId));
         return $s->fetchAll();
     }
@@ -111,8 +143,7 @@ class Objet {
     public function getObtained($chemins) {
         if (!$this->pdo || empty($chemins)) return array();
         $placeholders = implode(',', array_fill(0, count($chemins), '?'));
-        $s = $pdo = $this->pdo;
-        $s = $pdo->prepare(
+        $s = $this->pdo->prepare(
             "SELECT o.Label, o.Effet
              FROM Objet o
              JOIN obtenue ob ON o.id = ob.id_objet

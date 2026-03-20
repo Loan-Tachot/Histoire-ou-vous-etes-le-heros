@@ -8,17 +8,31 @@
 <body>
     <header class="topbar">
         <span class="perso-name">⚔ <?= htmlspecialchars($nom) ?></span>
-        <span class="stat">❤ <?= $stats['PV'] ?></span>
-        <span class="stat">💪 <?= $stats['Force'] ?></span>
-        <span class="stat">🌀 <?= $stats['Agilite'] ?></span>
-        <span class="stat">✨ <?= $stats['PM'] ?></span>
-        <span class="stat">⚡ <?= $stats['Puissance'] ?></span>
-        <span class="stat">🪙 <?= $stats['Argent'] ?></span>
+        <span class="stat" title="Points de vie">❤ <?= $stats['PV'] ?></span>
+        <span class="stat" title="Force">💪 <?= $stats['Force'] ?></span>
+        <span class="stat" title="Agilité">🌀 <?= $stats['Agilite'] ?></span>
+        <span class="stat" title="Points de magie">✨ <?= $stats['PM'] ?></span>
+        <span class="stat" title="Puissance">⚡ <?= $stats['Puissance'] ?></span>
+        <span class="stat" title="Argent">🪙 <?= $stats['Argent'] ?></span>
         <nav class="topnav">
             <a href="index.php?page=inventaire">Inventaire</a>
             <a href="index.php?page=accueil">Menu</a>
         </nav>
     </header>
+
+    <?php if (!empty($gainStats)): ?>
+    <div class="gains">
+        <?php foreach ($gainStats as $cle => $delta): ?>
+        <span class="gain <?= $delta > 0 ? 'gain-pos' : 'gain-neg' ?>">
+            <?= $delta > 0 ? '+' : '' ?><?= $delta ?>
+            <?php
+                $icones = array('PV'=>'❤','Force'=>'💪','Agilite'=>'🌀','PM'=>'✨','Puissance'=>'⚡','Argent'=>'🪙');
+                echo isset($icones[$cle]) ? $icones[$cle] : $cle;
+            ?>
+        </span>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
 
     <main class="card story-card">
         <?php if ($histoire): ?>

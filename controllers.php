@@ -40,13 +40,11 @@ class PersonnageController extends BaseController {
         if ($nom === '') {
             $this->redirect('index.php?page=creer_personnage&err=1');
         }
-
-        // Initialisation de la session — aucune BDD nécessaire
-        $_SESSION['perso_nom'] = htmlspecialchars($nom);
-        $_SESSION['chemins']   = array();
-        $_SESSION['stats']     = statsBase();
-
-        $this->redirect('index.php?page=jeu');
+        $_SESSION['perso_nom']    = htmlspecialchars($nom);
+        $_SESSION['chemins']      = array();
+        $_SESSION['stats']        = statsBase();
+        $_SESSION['nb_dodo']      = 0;   // compteur sommeil
+        $this->redirect('index.php?page=jeu&histoire=1');
     }
 }
 
@@ -68,26 +66,40 @@ class JeuController extends BaseController {
         $idH = isset($_GET['histoire']) ? max(1, (int) $_GET['histoire']) : 1;
 
         // Enregistrer le chemin et recalculer les stats
+        $gainStats = array();
         if (!in_array($idH, $_SESSION['chemins'])) {
             $_SESSION['chemins'][] = $idH;
+            $anciens               = $_SESSION['stats'];
             $_SESSION['stats']     = calculerStats($this->pdo, $_SESSION['chemins']);
+            // Calculer les gains pour affichage
+            foreach ($_SESSION['stats'] as $cle => $val) {
+                $delta = $val - $anciens[$cle];
+                if ($delta != 0) $gainStats[$cle] = $delta;
+            }
         }
 
+        $nom      = isset($_SESSION['perso_nom']) ? $_SESSION['perso_nom'] : '';
+        $stats    = $_SESSION['stats'];
         $histoire = $this->histoires->getById($idH);
-        $choix    = $this->debouchers->getBySource($idH);
 
-        $nom = isset($_SESSION['perso_nom']) ? $_SESSION['perso_nom'] : '';
-
-        // Remplacer 'Bonk' par le nom du joueur dans le texte
+        // Remplacer Bonk par le nom du joueur
         $texte = '';
         if ($histoire) {
             $texte = htmlspecialchars($histoire['texte_histoire']);
             $texte = str_replace('Bonk', htmlspecialchars($nom), $texte);
         }
 
+        // Récupérer tous les choix puis filtrer selon les conditions
+        $tousChoix = $this->debouchers->getBySource($idH);
+        $choix = array_filter($tousChoix, function($c) use ($stats) {
+            return evaluerCondition($c['condition_requise'], $stats);
+        });
+        $choix = array_values($choix);
+
         $this->render('jeu', array(
-            'nom'     => $_SESSION['perso_nom'],
-            'stats'   => $_SESSION['stats'],
+            'nom'      => $nom,
+            'stats'    => $stats,
+            'gainStats'=> $gainStats,
             'histoire'=> $histoire,
             'texte'   => $texte,
             'choix'   => $choix,
@@ -98,10 +110,25 @@ class JeuController extends BaseController {
         $this->requireSession();
         $id   = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         $dest = $this->debouchers->getById($id);
+
         if ($dest) {
-            $this->redirect('index.php?page=jeu&histoire=' . $dest['Id_histoire_destination']);
+            $idDest = (int) $dest['Id_histoire_destination'];
+
+            // Compteur sommeil : histoires 1 et 2 = dormir encore
+            // Histoire 2 = "Dormir encore" — on incrémente
+            if (in_array($idDest, array(1, 2))) {
+                $_SESSION['nb_dodo'] = isset($_SESSION['nb_dodo'])
+                    ? $_SESSION['nb_dodo'] + 1 : 1;
+                // 20ème fois → mort
+                if ($_SESSION['nb_dodo'] >= 20) {
+                    $this->redirect('index.php?page=jeu&histoire=3');
+                    return;
+                }
+            }
+
+            $this->redirect('index.php?page=jeu&histoire=' . $idDest);
         } else {
-            $this->redirect('index.php?page=jeu');
+            $this->redirect('index.php?page=jeu&histoire=1');
         }
     }
 }
@@ -109,10 +136,7 @@ class JeuController extends BaseController {
 // ── InventaireController ─────────────────────────────────────
 class InventaireController extends BaseController {
     private $objets;
-
-    public function __construct($objets) {
-        $this->objets = $objets;
-    }
+    public function __construct($objets) { $this->objets = $objets; }
 
     public function index() {
         $this->requireSession();

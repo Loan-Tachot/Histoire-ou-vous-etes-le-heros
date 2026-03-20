@@ -6,454 +6,437 @@ USE Story;
 -- TABLES
 -- =========================================================
 
-CREATE TABLE Classe(
-   id INT AUTO_INCREMENT,
-   Nom_classe VARCHAR(50) NOT NULL,
-   Element_ VARCHAR(50),
-   Arme VARCHAR(50) NOT NULL,
-   PRIMARY KEY(id)
-) ENGINE=InnoDB;
-
-CREATE TABLE Objet(
-   id INT AUTO_INCREMENT,
-   Label VARCHAR(100) NOT NULL,
-   Effet VARCHAR(255),
-   PRIMARY KEY(id)
-) ENGINE=InnoDB;
-
 CREATE TABLE Amelioration(
    Id_Amelioration INT AUTO_INCREMENT,
-   bonus_PV INT DEFAULT 0,
-   bonus_Force INT DEFAULT 0,
-   bonus_Agi INT DEFAULT 0,
-   Bonus_PM INT DEFAULT 0,
+   bonus_PV        INT DEFAULT 0,
+   bonus_Force     INT DEFAULT 0,
+   bonus_Agi       INT DEFAULT 0,
+   Bonus_PM        INT DEFAULT 0,
    bonus_Puissance INT DEFAULT 0,
-   Bonus_Argent INT DEFAULT 0,
+   Bonus_Argent    INT DEFAULT 0,
    PRIMARY KEY(Id_Amelioration)
 ) ENGINE=InnoDB;
 
 CREATE TABLE histoire(
-   Id_histoire INT AUTO_INCREMENT,
+   Id_histoire    INT AUTO_INCREMENT,
    texte_histoire VARCHAR(1000) NOT NULL,
    Id_Amelioration INT NOT NULL,
    PRIMARY KEY(Id_histoire),
    FOREIGN KEY(Id_Amelioration) REFERENCES Amelioration(Id_Amelioration)
 ) ENGINE=InnoDB;
 
+-- condition_requise : expression PHP évaluée côté serveur
+-- ex: Force>=8  PM<8  Agi>4  PM>Force  Force>PM  Force==PM
 CREATE TABLE Deboucher(
-   Id_Deboucher INT AUTO_INCREMENT,
-   choix VARCHAR(100) NOT NULL,
-   Id_histoire_source INT NOT NULL,
+   Id_Deboucher          INT AUTO_INCREMENT,
+   choix                 VARCHAR(100) NOT NULL,
+   condition_requise     VARCHAR(100) DEFAULT NULL,
+   Id_histoire_source    INT NOT NULL,
    Id_histoire_destination INT NOT NULL,
    PRIMARY KEY(Id_Deboucher),
-   FOREIGN KEY(Id_histoire_source) REFERENCES histoire(Id_histoire),
+   FOREIGN KEY(Id_histoire_source)      REFERENCES histoire(Id_histoire),
    FOREIGN KEY(Id_histoire_destination) REFERENCES histoire(Id_histoire)
 ) ENGINE=InnoDB;
 
-CREATE TABLE personnage(
-   Id INT AUTO_INCREMENT,
-   Nom_personnage VARCHAR(50) NOT NULL,
-   PV_base INT NOT NULL,
-   Force_base INT NOT NULL,
-   Agilite_base INT NOT NULL,
-   PM_base INT NOT NULL,
-   Puissance_base INT NOT NULL,
-   argent_base INT NOT NULL,
-   id_classe INT NOT NULL,
-   PRIMARY KEY(Id),
-   FOREIGN KEY(id_classe) REFERENCES Classe(id)
+CREATE TABLE Classe(
+   id         INT AUTO_INCREMENT,
+   Nom_classe VARCHAR(50) NOT NULL,
+   Element_   VARCHAR(50),
+   Arme       VARCHAR(50) NOT NULL,
+   PRIMARY KEY(id)
+) ENGINE=InnoDB;
+
+CREATE TABLE Objet(
+   id    INT AUTO_INCREMENT,
+   Label VARCHAR(100) NOT NULL,
+   Effet VARCHAR(255),
+   PRIMARY KEY(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE obtenue(
-   id_objet INT NOT NULL,
+   id_objet    INT NOT NULL,
    Id_histoire INT NOT NULL,
    PRIMARY KEY(id_objet, Id_histoire),
-   FOREIGN KEY(id_objet) REFERENCES Objet(id),
+   FOREIGN KEY(id_objet)    REFERENCES Objet(id),
    FOREIGN KEY(Id_histoire) REFERENCES histoire(Id_histoire)
 ) ENGINE=InnoDB;
 
 -- =========================================================
--- DONNÉES : CLASSES
+-- AMÉLIORATIONS
 -- =========================================================
-
-INSERT INTO Classe (id, Nom_classe, Element_, Arme) VALUES
-(1, 'Assassin', 'Ombre', 'Dagues'),
-(2, 'Assassin', 'Poison', 'Dagues'),
-(3, 'Mage', 'Glace', 'Bâton'),
-(4, 'Mage', 'Feu', 'Bâton'),
-(5, 'Guerrier', 'Force', 'Épée lourde'),
-(6, 'Guerrier', 'Défense', 'Bouclier'),
-(7, 'Épéiste magique', 'Hybride', 'Épée'),
-(8, 'Support', 'Barde', 'Instrument'),
-(9, 'Support', 'Clerc', 'Sceptre');
+INSERT INTO Amelioration (Id_Amelioration, bonus_PV, bonus_Force, bonus_Agi, Bonus_PM, bonus_Puissance, Bonus_Argent) VALUES
+(1,  0,  0, 0, 0, 0,  0),   -- neutre
+(2,  0,  8, 0, 0, 0,  0),   -- +Force
+(3,  0,  0, 4, 0, 0,  0),   -- +Agi
+(4,  0,  0, 0, 8, 0,  0),   -- +PM
+(5,  0,  4, 0, 4, 0,  0),   -- +Force+PM
+(6, 10,  0, 0, 0, 0,  0),   -- +PV
+(7,  0,  0, 0, 0, 0, 20),   -- +Argent
+(8, 15,  5, 5, 5, 5, 50);   -- victoire totale
 
 -- =========================================================
--- DONNÉES : OBJETS
+-- HISTOIRES
 -- =========================================================
-
-INSERT INTO Objet (id, Label, Effet) VALUES
-(1, 'Bâton de bois', 'Objet trouvé au réveil'),
-(2, 'Pierre du départ', 'Point central de progression'),
-(3, 'Souvenir solo', 'Renforce la détermination'),
-(4, 'Souvenir avec mère', 'Augmente légèrement l\'agilité'),
-(5, 'Souvenir avec père', 'Augmente légèrement la force'),
-(6, 'Brume légère', 'Permet d\'accéder au chemin brumeux'),
-(7, 'Brume épaisse', 'Accès aux ruines anciennes'),
-(8, 'Pomme cueillie', 'Petit soin naturel'),
-(9, 'Pile d\'objets', 'Cache de récupération'),
-(10, 'Pièce ancienne', 'Objet de valeur'),
-(11, 'Piédestal épée', 'Support d\'arme ancienne'),
-(12, 'Épée rouillée', 'Vieille arme récupérable'),
-(13, '20 pièces d\'or', 'Gain d\'argent'),
-(14, 'Grimoire ancien', 'Objet de quête mage'),
-(15, 'Artefact légendaire', 'Objet de quête guerrier'),
-(16, 'Cristal d\'équilibre', 'Objet de quête épéiste'),
-(17, 'Herbes rares', 'Objet de quête support'),
-(18, 'Insigne de capitaine', 'Récompense de victoire royaume'),
-(19, 'Sceau rebelle', 'Récompense rebelle'),
-(20, 'Charte de paix', 'Récompense faction neutre'),
-(21, 'Emblème de l\'académie', 'Récompense défense académie');
-
--- =========================================================
--- DONNÉES : AMÉLIORATIONS
--- =========================================================
-
-INSERT INTO Amelioration
-(Id_Amelioration, bonus_PV, bonus_Force, bonus_Agi, Bonus_PM, bonus_Puissance, Bonus_Argent) VALUES
-(1, 0, 0, 0, 0, 0, 0),
-(2, 0, 8, 0, 0, 0, 0),
-(3, 0, 0, 4, 0, 0, 0),
-(4, 0, 0, 0, 8, 0, 0),
-(5, 0, 4, 0, 4, 0, 0),
-(6, 10, 0, 0, 0, 0, 0),
-(7, 0, 0, 0, 0, 0, 20),
-(8, 15, 5, 5, 5, 5, 50);
-
--- =========================================================
--- DONNÉES : PERSONNAGES
--- =========================================================
-
-INSERT INTO personnage
-(Id, Nom_personnage, PV_base, Force_base, Agilite_base, PM_base, Puissance_base, argent_base, id_classe) VALUES
-(1, 'Bonk Assassin Ombre', 80, 6, 10, 4, 5, 10, 1),
-(2, 'Bonk Assassin Poison', 80, 6, 10, 4, 5, 10, 2),
-(3, 'Bonk Mage Glace', 70, 3, 6, 10, 8, 10, 3),
-(4, 'Bonk Mage Feu', 70, 3, 6, 10, 8, 10, 4),
-(5, 'Bonk Guerrier Épée lourde', 110, 10, 4, 3, 4, 10, 5),
-(6, 'Bonk Guerrier Bouclier', 120, 8, 3, 3, 4, 10, 6),
-(7, 'Bonk Épéiste magique', 95, 7, 6, 8, 7, 10, 7),
-(8, 'Bonk Support Barde', 75, 4, 6, 9, 8, 10, 8),
-(9, 'Bonk Support Clerc', 90, 4, 5, 10, 8, 10, 9);
-
--- =========================================================
--- DONNÉES : HISTOIRES
--- =========================================================
+-- Bloc 1 : Réveil (1-8)
+-- Bloc 2 : Point de départ + maison (9-14)
+-- Bloc 3 : Forêt (15-34)
+-- Bloc 4 : Académie + gobelin (35-46)
+-- Bloc 5 : Classes (47-90)
+-- Bloc 6 : Guerre (91-112)
 
 INSERT INTO histoire (Id_histoire, texte_histoire, Id_Amelioration) VALUES
-(1, 'Début de l\'aventure.', 1),
-(2, 'Dormir ?', 1),
-(3, 'Bonk se rendort paisiblement.', 1),
-(4, 'Dormir une deuxième fois ?', 1),
-(5, 'Bonk meurt de trop dormir dans son sommeil.', 1),
-(6, 'Bonk décide finalement de se lever.', 1),
-(7, 'Es-tu sûr de trop dormir ?', 1),
-(8, 'Bonk câline un loup. Fin étrange mais paisible.', 1),
-(9, 'Bonk arrive à la pierre du départ.', 1),
-
-(10, 'Bonk visite la maison.', 1),
-(11, 'Bonk s\'entraîne seul.', 2),
-(12, 'Bonk s\'entraîne avec sa mère.', 3),
-(13, 'Bonk s\'entraîne avec son père.', 2),
-(14, 'Bonk retourne à la pierre du départ.', 1),
-
-(15, 'Bonk entre dans la forêt.', 1),
-(16, 'Il avance encore dans la forêt.', 1),
-(17, 'Il joue dans la forêt.', 1),
-(18, 'Bonk atteint le milieu de la forêt.', 1),
-(19, 'Il s\'enfonce davantage dans la forêt.', 1),
-(20, 'Un croisement apparaît devant lui.', 1),
-(21, 'Bonk prend à gauche.', 1),
-(22, 'Il va encore plus loin.', 1),
-(23, 'Le brouillard tombe autour de lui.', 1),
-(24, 'Bonk cueille ce qu\'il trouve.', 1),
-(25, 'Le brouillard devient épais.', 1),
-(26, 'Bonk cueille une pomme.', 1),
-(27, 'Une faille dimensionnelle apparaît.', 1),
-(28, 'Bonk découvre une ancienne ruine.', 1),
-(29, 'Il trouve une pile d\'objets.', 1),
-(30, 'Bonk fouille et empile les objets.', 1),
-(31, 'Un piédestal avec une épée apparaît.', 1),
-(32, 'Bonk déblaye les morceaux autour de la ruine.', 1),
-(33, 'Bonk extrait 20 pièces d\'or.', 7),
-(34, 'Bonk extrait une épée rouillée.', 1),
-
-(35, 'Bonk se dirige vers l\'académie.', 1),
-(36, 'Un gobelin apparaît sur le chemin.', 1),
-(37, 'Bonk utilise la force.', 1),
-(38, 'Sa force est-elle suffisante ?', 1),
-(39, 'Bonk tue le gobelin par la force.', 2),
-(40, 'Bonk meurt contre le gobelin en combat physique.', 1),
-(41, 'Bonk utilise la magie.', 1),
-(42, 'Ses PM sont-ils suffisants ?', 1),
-(43, 'Bonk meurt contre le gobelin par manque de magie.', 1),
-(44, 'Bonk tue le gobelin grâce à la magie.', 4),
-(45, 'Bonk arrive à l\'académie.', 1),
-(46, 'Il doit choisir sa classe.', 1),
-
-(47, 'Son agilité augmente.', 3),
-(48, 'Bonk devient assassin.', 1),
-(49, 'Il suit une formation de furtivité.', 1),
-(50, 'Sa première quête consiste à éliminer une cible corrompue.', 1),
-
-(51, 'Ses PM dominent sa force.', 5),
-(52, 'Bonk devient mage.', 1),
-(53, 'Il suit une formation de magie élémentaire.', 1),
-(54, 'Sa quête consiste à récupérer un grimoire ancien.', 1),
-
-(55, 'Sa force domine ses PM.', 5),
-(56, 'Bonk devient guerrier.', 1),
-(57, 'Il suit une formation au combat rapproché.', 1),
-(58, 'Sa quête consiste à forger une arme légendaire.', 1),
-
-(59, 'Sa force et ses PM sont équilibrés.', 5),
-(60, 'Bonk devient épéiste magique.', 1),
-(61, 'Il suit une formation d\'arts hybrides.', 1),
-(62, 'Sa quête consiste à trouver un cristal d\'équilibre.', 1),
-
-(63, 'Bonk choisit la voie support.', 1),
-(64, 'Bonk devient support.', 1),
-(65, 'Il suit une formation de soins et buffs.', 1),
-(66, 'Sa quête consiste à collecter des herbes rares.', 1),
-
-(67, 'Bonk choisit une spécialisation d\'assassin.', 1),
-(68, 'Bonk suit la voie de l\'ombre.', 1),
-(69, 'Bonk suit la voie du poison.', 1),
-(70, 'Mission d\'académie : infiltration.', 1),
-(71, 'Fin de l\'année 1 pour l\'assassin.', 1),
-
-(72, 'Bonk choisit la spécialisation glace.', 1),
-(73, 'Bonk choisit la spécialisation feu.', 1),
-(74, 'Mission d\'académie : protéger la bibliothèque.', 1),
-(75, 'Fin de l\'année 1 pour le mage.', 1),
-
-(76, 'Bonk choisit sa voie de guerrier.', 1),
-(77, 'Il se spécialise en épée lourde.', 1),
-(78, 'Il se spécialise en bouclier.', 1),
-(79, 'Mission d\'académie : défendre le village.', 1),
-(80, 'Fin de l\'année 1 pour le guerrier.', 1),
-
-(81, 'Bonk choisit l\'enchantement de son style.', 1),
-(82, 'Il s\'oriente vers un style défensif.', 1),
-(83, 'Il s\'oriente vers un style offensif.', 1),
-(84, 'Mission d\'académie : escorte diplomatique.', 1),
-(85, 'Fin de l\'année 1 pour l\'épéiste magique.', 1),
-
-(86, 'Bonk choisit sa voie de support.', 1),
-(87, 'Il devient barde.', 1),
-(88, 'Il devient clerc.', 1),
-(89, 'Mission d\'académie : soigner les blessés.', 1),
-(90, 'Fin de l\'année 1 pour le support.', 1),
-
-(91, 'La guerre éclate.', 1),
-(92, 'Bonk doit choisir une faction.', 1),
-(93, 'Bonk rejoint le Royaume.', 1),
-(94, 'Bonk rejoint les Rebelles.', 1),
-(95, 'Bonk reste neutre.', 1),
-(96, 'Bonk reste à l\'académie.', 1),
-
-(97, 'Combat : bataille des plaines.', 1),
-(98, 'Combat : raid nocturne.', 1),
-(99, 'Mission : négocier la paix.', 1),
-(100, 'Bonk défend l\'académie.', 1),
-
-(101, 'Victoire du Royaume ?', 1),
-(102, 'Victoire des Rebelles ?', 1),
-(103, 'La négociation réussit-elle ?', 1),
-(104, 'Bonk survit-il à l\'attaque ?', 1),
-
-(105, 'Bonk est promu capitaine.', 8),
-(106, 'Bonk meurt héroïquement.', 1),
-(107, 'Bonk devient leader rebelle.', 8),
-(108, 'Bonk est trahi et meurt.', 1),
-(109, 'Une paix temporaire est obtenue.', 8),
-(110, 'La diplomatie échoue.', 1),
-(111, 'L\'académie est sauvée.', 8),
-(112, 'L\'académie est détruite.', 1);
-
--- =========================================================
--- DONNÉES : DÉBOUCHÉS
--- =========================================================
-
-INSERT INTO Deboucher (choix, Id_histoire_source, Id_histoire_destination) VALUES
-('Commencer', 1, 2),
-('Oui', 2, 3),
-('Non', 2, 6),
-('Continuer', 3, 4),
-('Oui', 4, 5),
-('Non', 4, 6),
-('Continuer', 6, 7),
-('Oui', 7, 8),
-('Non', 7, 9),
-
-('Maison', 9, 10),
-('Forêt', 9, 15),
-('Académie', 9, 35),
-
-('S\'entraîner seul', 10, 11),
-('S\'entraîner avec mère', 10, 12),
-('S\'entraîner avec père', 10, 13),
-('Retour', 11, 14),
-('Retour', 12, 14),
-('Retour', 13, 14),
-('Revenir à la pierre du départ', 14, 9),
-
-('Avancer', 15, 16),
-('Continuer', 16, 17),
-('Jouer', 17, 18),
-('S\'enfoncer', 18, 19),
-('Continuer', 19, 20),
-('Gauche', 20, 21),
-('Encore plus loin', 21, 22),
-('Brouillard', 22, 23),
-('Cueillir', 22, 24),
-('Suivre la brume', 23, 25),
-('Cueillir pomme', 24, 26),
-('Continuer', 25, 28),
-('Tomber dans la faille', 26, 27),
-('Explorer la ruine', 28, 29),
-('Fouiller', 29, 30),
-('Prendre le piédestal', 29, 31),
-('Déblayer', 30, 32),
-('Extraire 20 PO', 32, 33),
-('Extraire épée rouillée', 31, 34),
-
-('Entrer à l\'académie', 35, 36),
-('Force', 36, 37),
-('Magie', 36, 41),
-('Tester la force', 37, 38),
-('Oui', 38, 39),
-('Non', 38, 40),
-('Tester la magie', 41, 42),
-('Oui', 42, 44),
-('Non', 42, 43),
-('Continuer', 39, 45),
-('Continuer', 44, 45),
-('Choix de classe', 45, 46),
-
-('Assassin', 46, 47),
-('Mage', 46, 51),
-('Guerrier', 46, 55),
-('Épéiste magique', 46, 59),
-('Support', 46, 63),
-
-('Devenir assassin', 47, 48),
-('Formation', 48, 49),
-('Quête', 49, 50),
-('Spécialisation', 50, 67),
-
-('Devenir mage', 51, 52),
-('Formation', 52, 53),
-('Quête', 53, 54),
-('Spécialisation', 54, 67),
-
-('Devenir guerrier', 55, 56),
-('Formation', 56, 57),
-('Quête', 57, 58),
-('Spécialisation', 58, 76),
-
-('Devenir épéiste magique', 59, 60),
-('Formation', 60, 61),
-('Quête', 61, 62),
-('Enchantement', 62, 81),
-
-('Devenir support', 63, 64),
-('Formation', 64, 65),
-('Quête', 65, 66),
-('Voie support', 66, 86),
-
-('Ombre', 67, 68),
-('Poison', 67, 69),
-('Mission académie', 68, 70),
-('Mission académie', 69, 70),
-('Fin année 1', 70, 71),
-('Début guerre', 71, 91),
-
-('Glace', 67, 72),
-('Feu', 67, 73),
-('Mission académie', 72, 74),
-('Mission académie', 73, 74),
-('Fin année 1', 74, 75),
-('Début guerre', 75, 91),
-
-('Épée lourde', 76, 77),
-('Bouclier', 76, 78),
-('Mission académie', 77, 79),
-('Mission académie', 78, 79),
-('Fin année 1', 79, 80),
-('Début guerre', 80, 91),
-
-('Défensif', 81, 82),
-('Offensif', 81, 83),
-('Mission académie', 82, 84),
-('Mission académie', 83, 84),
-('Fin année 1', 84, 85),
-('Début guerre', 85, 91),
-
-('Barde', 86, 87),
-('Clerc', 86, 88),
-('Mission académie', 87, 89),
-('Mission académie', 88, 89),
-('Fin année 1', 89, 90),
-('Début guerre', 90, 91),
-
-('Choisir une faction', 91, 92),
-('Royaume', 92, 93),
-('Rebelles', 92, 94),
-('Neutre', 92, 95),
-('Académie', 92, 96),
-
-('Combat', 93, 97),
-('Combat', 94, 98),
-('Mission', 95, 99),
-('Défendre', 96, 100),
-
-('Résultat', 97, 101),
-('Résultat', 98, 102),
-('Résultat', 99, 103),
-('Résultat', 100, 104),
-
-('Oui', 101, 105),
-('Non', 101, 106),
-('Oui', 102, 107),
-('Non', 102, 108),
-('Oui', 103, 109),
-('Non', 103, 110),
-('Oui', 104, 111),
-('Non', 104, 112);
+-- Bloc 1 : Réveil
+(1, 'Bonk ouvre les yeux dans l\'obscurité. Un plafond de pierres grises se dessine au-dessus de lui. L\'air sent la cire fondue et la paille humide. Quelque part au loin, un coq chante. Son coeur bat lentement, lourdement, comme s\'il hésitait à reprendre son service. Une voix dans sa tête lui murmure que quelque chose l\'attend dehors — quelque chose de grand, de dangereux, d\'inévitable. L\'aventure commence aujourd\'hui, qu\'il le veuille ou non.', 1),
+(2, 'Les paupières de Bonk s\'alourdissent à nouveau. Le matelas de paille crisse sous son corps. Les rêves l\'appellent, doux et insistants, comme des mains qui tirent sur sa couverture. Il sait qu\'il devrait se lever — la calèche ne l\'attendra pas éternellement. Mais le sommeil est chaud, et le monde dehors est froid. Il ferme les yeux. Juste encore un peu.', 1),
+(3, 'C\'est la vingtième fois que Bonk sombre dans le sommeil ce matin. Son corps a rendu les armes. Son coeur, épuisé par tant de réveils avortés, ralentit... ralentit... s\'arrête. Il part dans un rêve dont il ne reviendra jamais. Quelque part, la calèche repart sans lui pour l\'éternité.', 1),
+(4, 'Bonk se redresse péniblement sur sa paillasse. Ses os craquent comme du bois vert. La lumière du matin filtre sous la porte en un mince trait doré. Il pose les pieds sur le sol froid, inspire profondément l\'air de cette chambre qu\'il connaît depuis toujours, et se dit que c\'est aujourd\'hui que tout change. Il doit partir. La calèche pour la grande route passe à l\'aube — s\'il a les jambes pour la rattraper.', 1),
+(5, 'Bonk arrive en courant à l\'auberge, hors d\'haleine. Mais le nuage de poussière au bout du chemin lui dit tout : la calèche est partie. Le palefrenier hausse les épaules avec une grimace désolée. Trop de sommeil, trop de retard. L\'opportunité s\'est envolée comme une plume dans le vent. Bonk s\'assoit sur un banc et contemple la route vide. Il faudra attendre demain. Ou peut-être que demain n\'existera jamais.', 1),
+-- Bloc 2 : Point de départ
+(6, 'La Pierre du Départ se dresse au carrefour des trois chemins, massive et couverte de lichens orangés. Des centaines de noms y sont gravés — tous ceux qui, avant Bonk, ont choisi leur destin à cet endroit précis. Il pose la main sur la roche froide et sent quelque chose vibrer sous ses doigts, comme un souvenir enfoui dans la pierre. À sa gauche, le toit de tuiles rouges de la maison familiale. Droit devant, la lisière sombre de la Grande Forêt. À sa droite, la route pavée qui mène vers les tours de l\'Académie.', 1),
+-- Bloc 3 : Maison
+(7, 'La maison familiale est exactement comme dans ses souvenirs — et pourtant tout lui semble plus petit, plus fragile. La poutre fissurée au plafond, le carrelage dépareillé, l\'odeur de soupe aux herbes qui imprègne les murs depuis vingt ans. Bonk s\'arrête sur le seuil. Il y a quelque chose de réconfortant et de douloureux à la fois dans ce retour. Il a encore le temps de s\'entraîner ici avant de partir pour de bon.', 1),
+(8, 'Bonk s\'entraîne seul dans la cour de terre battue, sous un ciel de plomb. Pas de maître, pas de partenaire — juste lui, ses poings, et la résistance du monde. Il frappe le pieu de bois jusqu\'à ce que ses mains saignent, soulève les pierres jusqu\'à ce que ses épaules brûlent, court autour de la cour jusqu\'à ce que ses poumons crient grâce. Quand il s\'arrête enfin, le soleil est bas sur l\'horizon. Il est seul, épuisé — et plus fort.', 2),
+(9, 'La mère de Bonk se déplace comme l\'eau — fluide, imprévisible, impossible à saisir. Elle lui montre comment tomber sans se blesser, comment rouler pour esquiver, comment placer ses pieds pour ne jamais perdre l\'équilibre. Les deux heures passent comme un souffle. Quand elle le prend dans ses bras pour lui dire au revoir, il sent qu\'il a hérité de quelque chose d\'elle. Pas seulement de la technique — quelque chose de plus profond, inscrit dans les muscles.', 3),
+(10, 'Le père de Bonk ne parle pas pendant l\'entraînement. Il frappe. Il bloque. Il corrige d\'une claque sur l\'épaule ou d\'un regard sévère. Les coups sont durs, les reprises longues, les pauses inexistantes. Mais quand le vieux s\'arrête enfin et pose la main sur la nuque de son fils, Bonk comprend que c\'est sa façon à lui de dire qu\'il est fier. Il repart avec les côtes meurtries et la force décuplée.', 2),
+(11, 'Bonk repasse le seuil de la maison une dernière fois — ou peut-être pas la dernière, qui sait. La Pierre du Départ l\'attend au carrefour, impassible, avec ses trois chemins et ses centaines de noms gravés. Il respire l\'air du matin, ajuste son sac sur son épaule, et reprend la route. Il se sent différent. Plus prêt.', 1),
+-- Bloc 4 : Forêt
+(12, 'La lisière de la Grande Forêt est marquée par deux chênes centenaires dont les branches s\'entrelacent en une arche naturelle. Au-delà, la lumière change — plus verte, plus filtrée, plus ancienne. Le sol devient spongieux sous les bottes de Bonk. Les bruits du village s\'estompent rapidement, remplacés par le grincement des arbres, le ruissellement d\'un cours d\'eau invisible, et quelque chose d\'autre, difficile à nommer. Une présence. La forêt observe.', 1),
+(13, 'Plus Bonk avance, plus le silence s\'épaissit. Ce n\'est pas le silence du vide — c\'est le silence de quelque chose qui attend. Les feuilles mortes crissent sous ses pas. Des champignons luminescents ponctuent les racines des vieux arbres. Il s\'arrête une seconde, tend l\'oreille. Un craquement de branche. Un froissement de feuilles. Puis plus rien. Il continue.', 1),
+(14, 'Quelque chose dans cette forêt réveille l\'enfant qui sommeille en Bonk. Il grimpe dans un chêne, bondit de branche en branche, se laisse glisser le long d\'un tronc recouvert de mousse. Il roule sur les fougères, enjambe des ruisseaux, s\'élance à travers les rayons de lumière comme s\'il dansait. Son corps s\'adapte, s\'affine, trouve ses limites et les dépasse. Quand il reprend pied, il se sent plus léger, plus agile, plus vivant.', 3),
+(15, 'Le coeur de la forêt. Les arbres ici sont immenses, plus larges que cinq hommes tendant les bras. La canopée forme un plafond si dense que la lumière du soleil n\'arrive qu\'en fines lances verticales, poussiéreuses et sacrées. Bonk s\'arrête, impressionné malgré lui. On dit que ces arbres ont mille ans. On dit qu\'ils se souviennent. Il pose sa main sur l\'écorce ridée du plus grand et croit sentir quelque chose battre, lentement, comme un coeur.', 1),
+(16, 'La végétation se resserre. Les branches basses fouettent le visage de Bonk, les ronces accrochent ses vêtements. Il doit se baisser, se faufiler, forcer le passage. La forêt ne l\'invite plus — elle teste. Un oiseau inconnu crie au loin, aigu et déchirant. Le sol monte légèrement. Quelque part devant lui, il distingue une bifurcation entre les troncs.', 1),
+(17, 'Trois chemins s\'ouvrent dans la pénombre de la forêt. À gauche, un sentier envahi par une brume blanche et froide qui rampe au ras du sol — on ne voit pas à plus de dix pas. Au milieu, une trouée lumineuse laisse deviner une clairière, une odeur de fleurs sauvages. À droite, le chemin est plus large, plus dégagé — mais quelque chose dans l\'air y est différent, plus pesant. Une odeur de bête.', 1),
+(18, 'Bonk s\'engage sur le sentier de gauche. La brume l\'avale presque immédiatement. Il ne voit plus que le sol à ses pieds et les silhouettes floues des arbres de chaque côté. L\'air est humide, glacé, et sent la terre retournée. Ses pas font peu de bruit sur le tapis de mousse. Il a l\'impression étrange d\'être observé — pas de manière hostile, juste... attentive. Comme si quelque chose attendait de voir ce qu\'il allait faire.', 1),
+(19, 'La brume est si dense maintenant que Bonk doit tendre les mains devant lui pour ne pas heurter les arbres. Des formes indistinctes bougent dans le blanc autour de lui — ou peut-être ce n\'est que son imagination. Il entend des sons : craquements, souffles, le bruissement de quelque chose de grand qui se déplace. Il doit choisir : suivre la brume ou cueillir ce qui pousse dans la pénombre.', 1),
+(20, 'Les herbes qui poussent ici sont différentes de tout ce que Bonk connaît. Des tiges translucides, des baies d\'un bleu profond, des feuilles qui semblent luire d\'une lumière propre. Il les cueille prudemment, les glisse dans sa sacoche. Un vieux sage lui a un jour dit que les plantes de brouillard guérissent autant qu\'elles endorment. Il ne sait pas encore lesquelles il a trouvées.', 1),
+(21, 'La brume ne se contente plus de ramper — elle monte, elle tourbillonne, elle efface le monde par couches successives. Les arbres disparaissent. Le sol disparaît presque. Bonk avance à l\'aveugle, guidé par un instinct qu\'il ne comprend pas. La brume a une odeur maintenant — minérale, ancienne, comme l\'haleine d\'une caverne qui n\'a pas vu le soleil depuis des siècles.', 1),
+(22, 'Au milieu de nulle part, un pommier solitaire se dresse dans une petite trouée de la brume. Ses fruits sont rouges comme du sang, parfaitement ronds, absurdement appétissants. Bonk hésite — les fruits sauvages ne sont pas toujours ce qu\'ils semblent. Il en cueille un, le renifle. Il sent le miel et quelque chose d\'autre, quelque chose de chaud et de vivifiant. Il croque. Un flot d\'énergie traverse son corps.', 6),
+(23, 'La brume est maintenant une présence à part entière. Elle efface les sons, déforme les distances, fait de chaque pas un acte de foi. Bonk s\'arrête. Devant lui, à travers le blanc épais, il distingue quelque chose : une masse sombre, des lignes droites qui ne peuvent être naturelles. Des murs. Des ruines. Et entre lui et elles, quelque chose qui ressemble à une déchirure dans l\'air lui-même.', 1),
+(24, 'La faille est à peine plus grande qu\'une porte, et pourtant elle semble contenir une infinité. Ses bords scintillent de reflets dorés et bleus. L\'air à proximité vibre, comme la surface d\'un lac perturbé. Bonk sent ses cheveux se dresser sur sa nuque. De l\'autre côté, il entrevoit quelque chose — des couleurs impossibles, une lumière qui ne vient de nulle part. Une invitation ou un avertissement ? Il ne peut pas encore le savoir.', 1),
+(25, 'Les ruines émergent de la brume comme les ossements d\'une vieille civilisation. Des colonnes brisées, des murs à moitié effondrés, des dalles de pierre gravées de symboles que Bonk ne reconnaît pas. La végétation a repris ses droits — les racines écartent les pierres, la mousse recouvre tout, des arbrisseaux poussent là où il y avait autrefois des salles. Bonk pose le pied sur le seuil et s\'arrête. L\'endroit dégage quelque chose de solennel.', 1),
+(26, 'Quelqu\'un est passé avant lui. Au centre de la salle principale, une pile d\'objets hétéroclites est entassée avec soin — ou peut-être sans soin, difficile à dire. Des outils rouillés, des morceaux de tissu, une vieille lanterne, des pierres gravées, ce qui ressemble à un journal intime à moitié brûlé. Qui a laissé tout ça ici, et pourquoi ? Bonk tourne autour de la pile, les yeux plissés.', 1),
+(27, 'Bonk fouille méthodiquement. Ses mains passent d\'objet en objet, écartant ce qui ne vaut rien, glissant dans sa sacoche ce qui pourrait servir. Il trouve des pièces anciennes entre des pierres, un couteau au manche de corne, plusieurs petits fioles dont le contenu a depuis longtemps séché. Et tout au fond, sous une pierre plate, quelque chose qui brille.', 1),
+(28, 'Au centre d\'une alcôve que la végétation n\'a pas encore envahie, un piédestal de marbre noir supporte une épée. Pas une épée de cérémonie — une vraie, avec des entailles sur la lame et de la rouille sur la garde. Mais elle se tient là avec une dignité évidente, comme si elle attendait la bonne personne. Bonk s\'approche. Une inscription court sur le socle, dans une langue qu\'il ne lit pas.', 1),
+(29, 'Bonk s\'agenouille devant le piédestal et commence à dégager les gravats et les racines qui l\'enchevêtrent. La pierre est froide sous ses paumes. Les caractères gravés sur le socle semblent presque lumineux par moments. Il travaille en silence, méthodiquement, sentant que chaque pierre déplacée est un acte qui a du sens.', 1),
+(30, 'Les décombres cachaient plus que prévu. Entre les pierres et les racines enchevêtrées, Bonk met au jour une petite bourse de cuir durci, fermée par un noeud qui tient encore malgré les années. Il l\'ouvre. Vingt pièces d\'or, épaisses et lourdes, marquées d\'un sceau qu\'il ne reconnaît pas. De l\'argent ancien — de l\'argent oublié.', 7),
+(31, 'Bonk saisit la poignée de l\'épée. Elle résiste une seconde — comme si elle évaluait sa valeur — puis cède avec un son qui ressemble à un soupir. Il la lève devant lui. La rouille ne la rend pas moins menaçante. Elle vibre légèrement dans sa main, comme si le métal se souvenait d\'anciennes batailles. Bonk la glisse dans son ceinturon. Il est désormais armé.', 2),
+(112, 'Bonk revient vers la maison familiale, les jambes encore légères après sa course dans les branches. La forêt lui a appris quelque chose aujourd\'hui — comment faire confiance à son corps, comment lire le sol et les obstacles, comment ne faire qu\'un avec le mouvement. Il pousse la porte, s\'effondre dans le fauteuil usé du salon, et sourit.', 1),
+(113, 'La trouée du milieu débouche sur une clairière que Bonk n\'aurait jamais imaginée trouver ici. L\'herbe y est d\'un vert intense, presque irréel. Des fleurs aux couleurs impossibles — violettes, dorées, bleu nuit — poussent en cercles concentriques. Les abeilles bourdonnent en silence. La lumière ici est différente, plus dorée, plus chaude, comme si la clairière avait son propre soleil. Et au centre, presque camouflé parmi les herbes hautes, quelque chose scintille faiblement.', 1),
+(114, 'Bonk s\'accroupit et commence à cueillir. Les baies sont d\'un rouge profond et translucides. Les champignons sont mauves, à peine plus grands que le pouce, avec un parfum de noisette et de terre. Il en remplit toute une poche. Mais c\'est le scintillement au centre de la clairière qui attire son regard — une déchirure lumineuse dans l\'air, pas plus grande qu\'une porte, qui pulse doucement comme quelque chose de vivant.', 1),
+(115, 'Bonk s\'engage sur le chemin de droite. L\'odeur de bête est plus forte maintenant — une odeur musquée, animale, qui colle au fond de la gorge. Il ralentit, pose les pieds avec précaution. Trop tard. Le loup surgit des fougères comme une flèche grise, silencieux et parfait dans sa violence. Bonk n\'a pas le temps de reculer. La forêt reprend ce qui lui appartient.', 1),
+(116, 'Bonk s\'agenouille devant l\'autel de pierre et pose les mains à plat sur la surface froide. Il ne sait pas vraiment à qui il s\'adresse — une force ancienne, un dieu oublié, l\'écho de ceux qui ont bâti ces ruines. Mais quelque chose répond. Une lumière douce monte entre ses doigts. Ses blessures cicatrisent, ses forces reviennent, et au fond de lui quelque chose se solidifie — une certitude tranquille qu\'il est exactement là où il doit être. Il se relève, changé, béni.', 8),
+(117, 'Bonk ressort des ruines par le même chemin qu\'il est entré. La brume s\'est dissipée. La forêt reprend ses droits autour de lui. Une chose est certaine : ces ruines ne se laisseront pas visiter deux fois. Il retourne vers le point de départ, plus riche de ce qu\'il a trouvé.', 1),
+-- Bloc 5 : Académie
+(32, 'La route qui mène à l\'Académie est pavée de larges dalles usées par des générations de semelles. De chaque côté, des platanes taillés au cordeau projettent leurs ombres régulières. Bonk marche depuis deux heures. Au loin, les quatre tours de l\'Académie se découpent sur le ciel gris, imposantes et froides. C\'est là que les destins se forgent — ou se brisent.', 1),
+(33, 'Le fossé sur le bas-côté de la route explose. Une forme verte et crasseuse en jaillit en poussant un cri rauque qui n\'est pas tout à fait humain. Le gobelin est petit mais rapide, armé d\'une dague courbe et d\'un mauvais vouloir évident. Ses yeux jaunes fixent Bonk avec une haine professionnelle. Il feinte à gauche, recule, cherche une ouverture. Bonk a quelques secondes pour décider comment répondre.', 1),
+(34, 'Bonk adopte une posture de combat. Ses muscles se souviennent de l\'entraînement — les heures dans la cour, les coups reçus et rendus, les reprises épuisantes. Il avance, cherche à saisir le gobelin, à le plaquer au sol par la seule force brute. C\'est un pari. Sa force est-elle à la hauteur ?', 1),
+(35, 'Bonk lève les mains, paumes ouvertes. Ses PM vibrent au bout de ses doigts — cette énergie étrange qu\'il a toujours sentie sans vraiment la comprendre. Il la canalise, la concentre, cherche à la lâcher contre la créature. Le gobelin hésite, renifle l\'air chargé de magie, et retrousse ses lèvres. Sa magie est-elle assez puissante ?', 1),
+(36, 'Bonk empoigne le gobelin par le collet et lui envoie un coup de coude qui lui décroche la mâchoire. La créature vole en arrière, rebondit dans le fossé, et ne se relève pas. Bonk reprend sa respiration, se remet en marche. Ses mains tremblent légèrement. Le combat était court, brutal, réel. Il arrive à l\'Académie avec les jointures à vif et quelque chose de nouveau dans les yeux.', 2),
+(37, 'La dague du gobelin trouve une brèche que Bonk n\'a pas su défendre. La lame est courte mais tranchante. Bonk recule, trébuche, tombe. La créature est sur lui avant qu\'il puisse se relever. La route pour l\'Académie reste vide sous le ciel gris. La calèche ne repassera pas.', 1),
+(38, 'La décharge magique frappe le gobelin en pleine poitrine. Il est projeté en arrière avec un hurlement bref, et reste là, fumant légèrement dans l\'herbe du fossé. Bonk baisse les mains, légèrement étourdi par l\'effort. La magie coûte quelque chose — une fatigue profonde, pas physique. Mais elle a fonctionné. Il reprend sa route, plus confiant qu\'il ne l\'était.', 4),
+(39, 'L\'énergie magique de Bonk vacille, s\'étire, puis s\'évanouit avec un sifflement pathétique. Le gobelin, qui s\'était arrêté une fraction de seconde, reprend son attaque avec un rire bref. Bonk ne peut que lever les bras pour se protéger — mais ce n\'est pas suffisant. La route reste vide. L\'Académie attendra un autre héros.', 1),
+(40, 'Les portes de l\'Académie sont hautes de trois hommes, en fer forgé orné de symboles. Elles s\'ouvrent sans bruit quand Bonk s\'approche — comme si elles l\'attendaient. La cour intérieure bourdonne d\'activité : des étudiants en robes de différentes couleurs se croisent, des maîtres dictent des leçons à voix haute, quelqu\'un fait léviter des pierres dans un coin. Bonk s\'arrête, le souffle coupé. Il est là.', 1),
+(41, 'Le maître de l\'Académie — un homme grand, sec, aux yeux d\'un gris presque blanc — fait le tour de Bonk en silence. Il ne parle pas. Il observe. Il note. Enfin il s\'arrête devant lui et dit, d\'une voix qui n\'admet pas la réplique : \"Avant tout, il faut savoir qui tu es. Quelle est ta voie ?\"', 1),
+-- Classes : Assassin (42-53)
+(42, 'Le maître observe Bonk bouger et un sourire imperceptible traverse son visage austère. \"Tu es rapide\", dit-il simplement. \"Pas le plus fort, pas le plus magique. Mais rapide. Et discret.\" Il tend une clé noire. \"La salle des ombres est au sous-sol. Tu trouveras ton chemin — ou tu ne trouveras rien du tout.\"', 3),
+(43, 'La cérémonie d\'intégration des assassins se passe dans une pièce sans fenêtre, à la lueur de bougies noires. Bonk reçoit un capuchon gris, un couteau court et une règle simple : ne jamais être vu. À partir de ce soir, il n\'est plus tout à fait lui-même. Il est une ombre avec un objectif.', 1),
+(44, 'L\'entraînement à la furtivité est une discipline de l\'effacement. Bonk apprend à marcher sans bruit sur n\'importe quelle surface, à se fondre dans une ombre même sous pleine lune, à contrôler sa respiration jusqu\'au murmure. Son maître — une femme qu\'il n\'a jamais vue en pleine lumière — lui dit : \"Le meilleur assassin est celui dont personne ne suspecte l\'existence.\"', 1),
+(45, 'La cible est un marchand corrompu qui vend de faux médicaments à des villages pauvres. Les malades meurent. Les profits s\'accumulent. Bonk passe trois nuits à surveiller ses habitudes, une à préparer son approche, et une heure à accomplir ce qui doit être accompli. Il repart avant l\'aube, sans un bruit. La justice, parfois, ressemble à une ombre.', 1),
+(46, 'Le maître convoque Bonk pour sa première spécialisation. \"Tu as prouvé ta valeur\", dit-il. \"Maintenant, tu dois choisir ta nature. L\'ombre : tu te bats avec la discrétion, l\'invisible, la patience infinie. Le poison : tu portes la mort dans les mains, lente et certaine. Ces deux chemins mènent au même endroit — mais par des routes très différentes.\"', 1),
+(47, 'La voie de l\'Ombre, c\'est l\'art de ne pas exister. Bonk apprend à se déplacer dans les angles morts, à anticiper le regard, à être déjà ailleurs quand on pense l\'avoir vu. Ses maîtres lui enseignent des techniques millénaires de dissimulation — certaines physiques, d\'autres presque mentales. Au bout de six semaines, même ses camarades ont du mal à le voir assis en face d\'eux.', 1),
+(48, 'Le poison est une science précise et patiente. Bonk apprend à distinguer des centaines de substances, à les doser au milligramme, à les administrer sans laisser de trace. Il apprend aussi que le poison n\'est pas seulement dans les fioles — les mots peuvent être des poisons, les rumeurs aussi, les silences surtout. Son maître lui dit : \"Un bon empoisonneur n\'a jamais besoin de couteau.\"', 1),
+(49, 'La mission d\'infiltration est la plus complexe que Bonk ait reçue. Un manoir ennemi, gardé par des hommes entraînés, protégé par des pièges magiques. Il doit entrer, trouver des documents compromettants, ressortir sans laisser de trace. Il passe la frontière à minuit, dans le ventre d\'un chariot de foin. La nuit s\'étire. Bonk est dans son élément.', 1),
+(50, 'L\'année s\'achève sur un bilan que Bonk n\'aurait jamais imaginé. Il est méconnaissable — et c\'est exactement le but. Son maître lui tend un sceau noir. \"Tu es maintenant une légende pour ceux qui ont besoin de tes services, et une rumeur pour les autres. La prochaine étape, c\'est la guerre. Elle va changer tout.\"', 1),
+-- Classes : Mage (51-62)
+(51, 'Le maître considère les PM de Bonk avec un intérêt inhabituel. \"Intéressant\", dit-il en plaçant une boule de cristal entre eux. Elle s\'illumine d\'elle-même. \"L\'énergie magique cherche une voie en toi. Elle est plus forte que ta musculature. C\'est rare. C\'est précieux.\" Il ferme les yeux une seconde. \"Va voir Maître Elwin. La tour Nord. Dis-lui que je t\'envoie.\"', 4),
+(52, 'La robe bleue de l\'École de Magie est trop grande pour Bonk — elle le sera jusqu\'à ce qu\'il ait appris à la remplir. Le maître Elwin lui explique que la magie n\'est pas un pouvoir qu\'on possède, c\'est une langue qu\'on apprend. Et comme toutes les langues, elle demande des années avant d\'être courante. Bonk ferme les yeux et tend les mains. Pour la première fois, il sent vraiment la magie — non pas comme une force, mais comme une conversation.', 1),
+(53, 'Les quatre éléments obéissent à des logiques différentes. Le feu est passionné, impulsif, affamé. L\'eau est patiente, adaptable, implacable sur la durée. L\'air est libre, imprévisible, difficile à saisir. La terre est stable, têtue, solide comme une certitude. Bonk passe des semaines à dompter chacun d\'eux, brûlant ses sourcils deux fois, gelant accidentellement ses propres bottes, soulevant une tempête de poussière dans la salle de cours.', 1),
+(54, 'Le grimoire est gardé par un dragon — pas une métaphore, un vrai dragon, de la taille d\'une maison, avec des écailles couleur de braise et un regard qui pèse des tonnes. Bonk passe une semaine à l\'observer avant d\'agir. Il apprend ses habitudes, ses angles morts, le moment précis de son sommeil le plus profond. Quand il s\'empare enfin du grimoire, il n\'éveille que la queue du dragon — qui se rendort aussitôt. Bonk descend de la montagne en courant, le livre serré contre sa poitrine.', 1),
+(55, '\"Le feu et la glace sont les deux extrêmes\", explique Maître Elwin en faisant tournoyer une flamme dans une main et un cristal de glace dans l\'autre. \"Le feu détruit vite et fort. La glace contrôle, immobilise, brise à froid. L\'un ou l\'autre dit quelque chose sur qui tu es. Choisis ce qui te ressemble — pas ce qui impressionne.\"', 1),
+(56, 'La glace est une magie de précision. Bonk apprend à créer des lames d\'air glacé, des pièges de verglas, des murs de givre. Il apprend surtout que la glace ralentit — les corps, les fluides, la magie adverse. Son maître lui dit : \"La glace est patiente. Elle ne se presse pas. Elle sait qu\'elle finira par gagner.\"', 1),
+(57, 'Le feu répond à Bonk comme s\'il le reconnaissait. Les flammes s\'élèvent à son appel, se forment en boucliers, en lances, en explosions contrôlées. Il apprend que le feu doit être maîtrisé constamment — un instant d\'inattention et il devient l\'ennemi. Mais maîtrisé, il est la force la plus directe et la plus terrifiante de l\'arsenal magique.', 1),
+(58, 'Des pillards attaquent la bibliothèque de l\'Académie à la tombée de la nuit. Des dizaines de manuscrits irremplaçables sont en danger. Bonk est le premier à répondre — il scelle les entrées avec des barrières magiques, pousse les intrus en dehors avec des vagues d\'énergie, protège les rayonnages les plus précieux jusqu\'à l\'arrivée des renforts. Le lendemain, pas un livre n\'a brûlé.', 1),
+(59, 'Maître Elwin remet à Bonk un anneau en métal sombre gravé d\'une rune de connaissance. \"Tu n\'es plus un étudiant\", dit-il. \"Tu es un mage. Ce titre ne s\'efface pas — il s\'approfondit. Continue d\'apprendre. Ne t\'arrête jamais.\" La guerre qui gronde au loin attend la réponse de Bonk.', 1),
+-- Classes : Guerrier (60-70)
+(60, 'Le maître examine les bras de Bonk, la largeur de ses épaules, la façon dont il se tient. \"Tu as la constitution d\'un guerrier\", dit-il sans cérémonie. \"Pas encore l\'entraînement — mais la base, oui. Va dans la cour des armes. Dis-leur que tu viens de ma part. Prépare-toi à souffrir.\"', 2),
+(61, 'L\'armure de guerrier de l\'Académie est lourde, bruyante, et ne pardonne aucun défaut de posture. Bonk l\'endosse pour la première fois sous le regard critique de l\'instructeur de combat, un ancien soldat qui a perdu deux doigts dans une bataille et n\'a gardé que le strict nécessaire. \"L\'armure ne te protège pas\", dit-il. \"C\'est toi qui protèges l\'armure. Si tu tombes, elle tombe. Compris ?\"', 1),
+(62, 'L\'esquive, d\'abord. Esquiver avant de parer. Parer avant de frapper. Frapper avant de chercher à conclure. Les leçons de combat rapproché sont une déconstruction complète des habitudes de Bonk — et une reconstruction méthodique. Après deux semaines, il est couvert de bleus de la tête aux pieds. Après six, il commence à comprendre.', 1),
+(63, 'La forge est dans la montagne, deux jours de marche au nord. Le maître forgeron est un nain aux bras comme des troncs et au regard qui juge le métal au premier coup d\'oeil. Bonk travaille à ses côtés pendant une semaine — il chauffe, frappe, trempe, recommence. Quand l\'arme est terminée, elle n\'est pas belle. Elle est vraie. Il y a une différence.', 1),
+(64, '\"Deux chemins s\'ouvrent devant toi\", dit l\'instructeur. \"L\'épée lourde : tu es l\'attaque, la percée, la pression permanente. Le bouclier : tu es le rempart, le protecteur, la ligne que l\'ennemi ne franchit pas. Un guerrier au bouclier ne gagne pas les batailles — il empêche les défaites. L\'épéiste les remporte. Ni l\'un ni l\'autre n\'est supérieur. Ils sont juste différents.\"', 1),
+(65, 'L\'épée lourde n\'est pas une arme de finesse — c\'est une arme de conviction. Bonk apprend à utiliser le poids pour lui, à laisser la lame mener le mouvement, à briser les gardes avec la masse plutôt qu\'à les contourner. Son épaule droite gonfle des premières semaines. Puis elle s\'adapte. Le métal et le bras finissent par ne faire qu\'un.', 1),
+(66, 'Le bouclier, contrairement à ce que Bonk croyait, n\'est pas passif. C\'est une arme, une projection de volonté. Il apprend à créer des ouvertures avec ses blocages, à déséquilibrer l\'adversaire avec une parade bien placée, à avancer sous les coups comme une marée montante. Son instructeur lui dit : \"Le bouclier ne dit pas \"je recule\". Il dit \"tu n\'iras pas plus loin\".\"', 1),
+(67, 'Une horde de pillards descend des collines sur un village agricole proche de l\'Académie. Bonk est envoyé avec quatre autres étudiants guerriers. Il n\'y a pas de plan sophistiqué — juste se placer entre les villageois et ceux qui leur veulent du mal, et tenir. Ils tiennent. Le village est debout au matin.', 1),
+(68, 'L\'instructeur serre la main de Bonk avec une poigne qui broie les os. \"Tu es un guerrier\", dit-il. Rien d\'autre. Mais dans sa bouche, c\'est une déclaration solennelle. Bonk repart avec son armure et ses cicatrices, et la guerre qui l\'attend au loin.', 1),
+-- Classes : Épéiste magique (69-78)
+(69, 'Le maître fait une pause. Pour la première fois, il semble surpris. \"Équilibre exact entre force et magie\", murmure-t-il en consultant ses notes. \"C\'est extrêmement rare. La plupart penchent d\'un côté.\" Il lève les yeux sur Bonk. \"Tu es à la frontière de deux mondes. Certains s\'y perdent. D\'autres en font leur plus grande force. Va voir Maîtresse Valka.\"', 5),
+(70, 'La lame et le sort. L\'acier et l\'arcane. Maîtresse Valka — une femme d\'une cinquantaine d\'années avec une épée d\'un côté et un grimoire de l\'autre — explique à Bonk que l\'épéiste magique ne divise pas ses énergies : il les multiplie. \"Quand tu frappes\", dit-elle, \"ta magie amplifie le coup. Quand tu lances un sort, ton instinct de combattant te protège. Tu n\'es jamais vraiment vulnérable.\"', 1),
+(71, 'La formation est double et épuisante. Le matin, combat au corps à corps. L\'après-midi, théorie magique. Le soir, les deux ensemble. Bonk apprend à canaliser de l\'énergie dans sa lame — un filet d\'abord, puis un flot régulier, puis une vague à volonté. Il apprend à lancer des sorts en plein mouvement, sans briser son rythme de combat.', 1),
+(72, 'Le cristal d\'équilibre est au sommet de la Montagne Grise, dans un temple en ruines battu par les vents. Le chemin est long et le temple est gardé par des automates de pierre dont les mouvements sont à la fois mécaniques et magiques. Bonk doit utiliser sa lame et ses sorts de concert pour passer chaque obstacle. Au sommet, le cristal l\'attend — translucide, parfait, vibrant d\'une énergie qui reconnaît la sienne.', 1),
+(73, '\"L\'équilibre peut se manifester de deux façons\", explique Maîtresse Valka. \"Le style défensif : tu absorbes, tu contre, tu utilises la force de l\'adversaire contre lui. C\'est un art de la patience. Le style offensif : tu attaques en premier, tu maintiens la pression, tu ne laisses pas l\'ennemi respirer. C\'est un art de la certitude. Les deux sont l\'équilibre — juste exprimé différemment.\"', 1),
+(74, 'La défense active est plus complexe qu\'il n\'y paraît. Bonk apprend à lire les attaques avant qu\'elles partent, à placer son corps et sa lame là où le coup devra passer, à rediriger l\'énergie adverse dans ses propres sorts défensifs. Son maître lui dit : \"Un bon défenseur ne subit pas l\'assaut. Il le dirige.\"', 1),
+(75, 'L\'offensive totale est terrifiante à regarder. Bonk enchaîne les passes de lame avec des éclairs magiques, les estocades avec des barrières qui repoussent, les attaques directes avec des sorts qui précèdent le mouvement. Ses adversaires d\'entraînement ne trouvent jamais le bon moment pour contre-attaquer — il n\'y en a pas.', 1),
+(76, 'Une délégation diplomatique doit traverser trois territoires hostiles. Bonk est chargé de l\'escorter. Douze jours de route, deux embuscades, une négociation tendue à la frontière du troisième territoire. La délégation arrive à destination entière. Bonk revient avec quelques nouvelles entailles et une vision beaucoup plus claire de ce que le monde lui réserve.', 1),
+(77, 'Maîtresse Valka lui remet un anneau d\'acier gravé à la fois de runes magiques et de signes de combat. \"Tu as trouvé ton équilibre\", dit-elle. \"Maintenant, garde-le.\" La guerre gronde. Bonk range l\'anneau à son doigt et part à sa rencontre.', 1),
+-- Classes : Support (78-87)
+(78, 'Le maître observe Bonk en silence pendant un long moment. \"Tu regardes tes camarades quand tu combats\", dit-il enfin. \"Pas pour les évaluer — pour les protéger. C\'est instinctif chez toi.\" Il tapote son bureau. \"La plupart des grands héros sont morts parce qu\'ils n\'avaient pas quelqu\'un comme toi à leurs côtés.\"', 1),
+(79, 'La tunique de support est verte, couleur de vie et de croissance. Bonk la porte fièrement. Son rôle ne sera pas de gagner les combats — son rôle sera de faire en sorte que ceux qui les gagnent puissent continuer à se battre. C\'est plus difficile qu\'il n\'y paraît, et bien plus important.', 1),
+(80, 'Les potions d\'abord — apprendre à les doser, les préparer, les administrer rapidement en plein chaos. Puis les enchantements de protection, les auras de résistance, les sorts de soin. Bonk passe des nuits entières sur des textes de médecine et de magie curative. Il apprend que guérir demande autant de précision que blesser — juste dans l\'autre direction.', 1),
+(81, 'Les marais du nord sentent la vase et l\'humus mouillé. Les herbes rares poussent dans des endroits impossibles d\'accès, sur des îlots de tourbe ou accrochées aux troncs d\'arbres à moitié noyés. Bonk passe quatre jours à patauger, à tomber, à se relever, à noter, à cueillir. Il rentre avec toutes ses plantes et une pneumonie légère qu\'il soigne lui-même.', 1),
+(82, '\"Barde ou Clerc\", dit le maître de la voie support. \"Le barde soutient en inspirant — sa musique ou ses mots donnent du courage, renforcent la volonté, galvanisent ce qui allait fléchir. Le clerc soutient en restaurant — il guérit, protège, maintient en vie. Les deux sont essentiels. Choisis ce que tu veux être pour les autres.\"', 1),
+(83, 'La musique du barde n\'est pas de l\'art pour l\'art — c\'est une arme douce. Bonk apprend un instrument à cordes dont le son peut, selon la mélodie, apaiser la douleur, galvaniser l\'ardeur au combat, ou terrifier l\'ennemi. Il apprend aussi les récits — comment une histoire bien racontée peut changer le moral d\'une troupe entière en cinq minutes.', 1),
+(84, 'Le clerc prie. C\'est sa discipline centrale, son outil principal. Bonk apprend les prières de soin, les invocations de protection, les rites de passage pour les morts. Il apprend que la foi, quelle qu\'en soit la forme, a une consistance réelle — quelque chose qui répond, qui agit, qui maintient les corps en vie quand la médecine ordinaire a rendu les armes.', 1),
+(85, 'Une embuscade sur la route de l\'Académie laisse sept blessés dont deux grièvement. Bonk est là. Il travaille pendant quatre heures sans interruption — pansements, sorts de soin, stabilisation, triage. Deux blessés qui auraient dû mourir survivent. L\'instructeur de médecine de l\'Académie, qui observait de loin, hoche la tête une seule fois.', 1),
+(86, 'La cérémonie de fin d\'année pour les supports est plus intime que les autres. Pas de grande salle, pas de discours. Juste le maître, une petite flamme sur une table, et une phrase simple : \"Le monde se souvient de ceux qui frappent. Mais il survit grâce à ceux qui soignent.\" Bonk repart avec cette phrase gravée quelque part.', 1),
+-- Bloc 6 : Guerre (87-104)
+(87, 'La nouvelle arrive à l\'aube, portée par un messager à cheval aux yeux cernés de trois jours sans sommeil. La guerre est déclarée. Les bannières adverses ont été vues à moins d\'une journée de marche. L\'Académie se tait. Puis les conversations reprennent, basses et urgentes. Bonk doit choisir — et vite. Le moment n\'attend pas.', 1),
+(88, 'Le Royaume représente l\'ordre, la stabilité, les routes pavées et les greniers pleins. Bonk rejoint ses rangs non par idéologie aveugle, mais parce qu\'il croit que sans structure, rien ne tient. On lui donne une unité. On lui confie des responsabilités. Il apprend à se battre non plus pour lui-même, mais pour ceux qui marchent à ses côtés.', 1),
+(89, 'Les Rebelles sont mal équipés, mal nourris, et absolument convaincus d\'avoir raison. Bonk les rejoint parce qu\'il a vu ce que le Royaume fait aux villages qui refusent de payer l\'impôt. Leur camp est un chaos organisé — chacun apporte ce qu\'il peut, chacun combat selon ses moyens. Il y a quelque chose de vivant dans tout ça. Quelque chose d\'indestructible.', 1),
+(90, 'La neutralité n\'est pas de la lâcheté — c\'est un choix difficile. Bonk décide qu\'il ne peut pas choisir entre deux légitimités qui se valent, et qu\'il aidera ceux qui souffrent, quelle que soit leur bannière. On le reçoit avec méfiance des deux côtés. Il apprend à s\'en accommoder.', 1),
+(91, 'L\'Académie est plus qu\'un bâtiment — c\'est une mémoire. Des siècles de savoir y sont accumulés. Bonk n\'a pas le droit de laisser tout ça disparaître dans les flammes de la guerre. Il prend position à l\'entrée et annonce qu\'il ne bougera pas. Certains rejoignent sa garde. D\'autres partent. Ceux qui restent sont décidés.', 1),
+(92, 'La plaine est immense et plate et le vent qui la traverse sent la poudre et le sang. Les deux armées se font face en lignes interminables. Bonk est quelque part dans la masse, son arme à la main, ses sorts prêts, attendant le signal. Quand il vient, c\'est un bruit comme le monde qui se déchire. Et puis plus rien que le chaos.', 1),
+(93, 'Le raid nocturne est une opération chirurgicale. Pas de cri de guerre, pas de bannières — juste des silhouettes qui se fondent dans les ombres et frappent où ça fait le plus mal. Bonk connaît son rôle par coeur. Chaque seconde compte. Chaque erreur coûte des vies. Il avance dans le noir en comptant ses respirations.', 1),
+(94, 'La table de négociation est une arène d\'un autre genre. Les mots sont des armes, le silence est une tactique, et les sourires peuvent cacher n\'importe quoi. Bonk n\'est pas diplomate de formation — mais il a appris à lire les gens. Il parle peu, observe beaucoup, et choisit le moment exact pour dire ce qui peut faire la différence.', 1),
+(95, 'L\'assaut commence à l\'heure la plus froide de la nuit. Bonk entend les bruits avant de voir quoi que ce soit — des pas, des chocs sourds, des ordres donnés à voix basse. Il réveille les autres gardiens et ils se placent. Quand l\'ennemi arrive, il trouve une défense prête. La bataille pour l\'Académie commence.', 1),
+(96, 'La poussière retombe lentement sur la plaine. Le Royaume a tenu. Les lignes ennemies ont plié, puis rompu. Bonk s\'appuie sur son arme et regarde le champ de bataille dans la lumière déclinante. Il a survécu. L\'unité autour de lui a survécu. C\'est plus qu\'il n\'espérait.', 1),
+(97, 'La ligne a cédé. Pas par manque de courage — par manque de nombre. Les soldats du Royaume reculent, puis fuient, puis n\'existent plus en tant que formation. Bonk combat jusqu\'au bout, seul, et tombe face à un adversaire qu\'il n\'a pas vu venir. La plaine avale tout.', 1),
+(98, 'Le raid a réussi au-delà des espérances. Les rebelles ont neutralisé les lignes de ravitaillement ennemies, libéré des prisonniers, récupéré des documents qui changeront l\'équilibre des forces. Bonk rentre au camp en portant un camarade blessé sur l\'épaule. Les autres rebelles les accueillent en silence — le silence des gens qui comprennent ce que ça coûte.', 1),
+(99, 'Quelqu\'un a parlé. Bonk ne saura jamais qui. Le piège se referme alors que le raid est à mi-chemin — des soldats ennemis surgissent de partout, trop nombreux, trop préparés. Les rebelles résistent jusqu\'au dernier. Bonk aussi.', 1),
+(100, 'L\'accord de paix est imparfait — tous les accords le sont. Mais il est signé, et les plumes qui l\'ont signé représentent des milliers de vies qui ne seront pas perdues. Bonk regarde les délégués se serrer la main et se dit que c\'est peut-être la victoire la plus difficile à obtenir et la moins visible de toutes.', 8),
+(101, 'Les négociations s\'effondrent sur un désaccord de procédure qui cache un désaccord de fond beaucoup plus profond. Les délégués quittent la table. Bonk regarde la salle vide et sait ce que ça signifie : la guerre continue, et avec elle, tout ce qu\'elle emporte.', 1),
+(102, 'Les assaillants ne s\'attendaient pas à une résistance organisée. Bonk et ses gardiens ont tenu chaque couloir, chaque porte, chaque escalier. Quand l\'aube arrive, les intrus ont disparu, et les livres sont intacts. L\'Académie respire.', 8),
+(103, 'Les murs cèdent à l\'heure la plus sombre de la nuit. Le feu prend rapidement — trop rapidement. Bonk combat les flammes et les envahisseurs en même temps, et finit par perdre les deux batailles à la fois. Il sort de l\'Académie en ruines dans les premières lueurs de l\'aube, les mains brûlées, portant sous le bras les quelques manuscrits qu\'il a pu sauver.', 1),
+-- Fins (104-112)
+(104, 'Le général du Royaume s\'arrête devant Bonk sur le champ de bataille encore fumant. \"J\'ai observé ton unité\", dit-il. \"Tu n\'as pas seulement combattu. Tu as commandé, protégé, maintenu la cohésion quand tout s\'effondrait.\" Il sort un insigne de sa poche. \"Capitaine. Immédiatement.\" Bonk prend l\'insigne. Sa légende est écrite.', 8),
+(105, 'Bonk tombe en protégeant un blessé qu\'il portait hors du champ de bataille. Ceux qui ont survécu racontent l\'histoire pendant des années. Son nom est gravé sur le mémorial du Royaume, entre ceux des généraux et des héros. L\'héroïsme ne choisit pas toujours ses survivants.', 1),
+(106, 'La victoire du raid fait de Bonk une figure de la rébellion. Les autres combattants le regardent différemment. Quand le leader rebelle est blessé lors d\'une opération ultérieure, c\'est vers Bonk que tout le monde se tourne naturellement. Il n\'avait pas prévu d\'être un chef. Mais apparemment, ça ne se prévoit pas.', 8),
+(107, 'Le traitre était là depuis le début, à sourire et à prendre des notes. Bonk ne le comprend que trop tard. Il meurt sans colère — juste avec la tristesse de ceux qui ont cru en quelque chose qui ne le méritait pas.', 1),
+(108, 'La paix est fragile, provisoire, imparfaite. Mais elle existe. Bonk est présent lors de la signature dans une salle neutre, entre deux bannières qui ne se regardent pas encore. Il serre la main des deux délégués principaux et leur dit la même chose à chacun : \"Maintenant, faites-en quelque chose.\"', 8),
+(109, 'Les négociations échouent, et l\'autre camp accuse Bonk d\'avoir saboté les discussions. C\'est faux, mais dans la guerre, la vérité a moins de valeur que le récit. Il est arrêté à la frontière et jeté dans une prison dont les murs ne parlent que de défaite.', 1),
+(110, 'L\'Académie est sauvée. Bonk arpente les couloirs en silence le lendemain de l\'assaut, vérifiant chaque salle, chaque bibliothèque, chaque atelier. Tout est là. Tout a tenu. Le vieux maître l\'attend dans son bureau et lui tend une clé. \"Tu es le gardien maintenant\", dit-il. \"L\'Académie t\'appartient — et tu lui appartiens.\"', 8),
+(111, 'Les décombres de l\'Académie fument encore quand Bonk s\'assoit sur un bloc de pierre qui était autrefois une fenêtre. Il tient contre lui les quelques livres qu\'il a sauvés. La bibliothèque est détruite. Les ateliers aussi. Des années de savoir, perdus. Il erre parmi les ruines jusqu\'au soir, sans destination, cherchant quelque chose à quoi se raccrocher.', 1);
 
 -- =========================================================
--- DONNÉES : OBJETS OBTENUS
+-- DÉBOUCHÉS  (condition_requise : NULL = toujours visible)
+-- Format condition : StatNom operateur valeur
+-- ex: Force>=8  PM<8  Agi>4  PM>Force  Force>PM  Force==PM
 -- =========================================================
+INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire_destination) VALUES
+-- Réveil
+('Dormir encore',        NULL,          1, 2),
+('Se lever',             NULL,          1, 4),
+('Dormir encore',        NULL,          2, 2),
+('Se lever',             NULL,          2, 4),
+-- 20ème fois -> géré en PHP (compteur session), on met un nœud spécial
+-- Se lever -> test stats
+('Continuer',            'PV<110',      4, 6),
+('Loupé la calèche',     'PV>=110',     4, 5),
 
+-- Point de départ
+('Aller à la maison',    NULL,          6, 7),
+('Aller en forêt',       NULL,          6, 12),
+('Aller à l\'académie',  NULL,          6, 32),
+
+-- Maison
+('S\'entraîner seul',          NULL,  7, 8),
+('S\'entraîner avec mère',     NULL,  7, 9),
+('S\'entraîner avec père',     NULL,  7, 10),
+('Retour au départ',           NULL,  8, 11),
+('Retour au départ',           NULL,  9, 11),
+('Retour au départ',           NULL, 10, 11),
+('Retour à la pierre',         NULL, 11,  6),
+('Retour à la forêt',          NULL, 112, 12),
+('Retour au départ',           NULL, 117,  6),
+
+-- Forêt
+('Aller dans la forêt',        NULL, 12, 13),
+('Jouer dans la forêt',        NULL, 13, 14),
+('Retour à la maison',         NULL, 14, 112),
+('Milieu forêt',               NULL, 14, 15),
+('S\'enfoncer dans la forêt',  NULL, 15, 16),
+('Croisement',                 NULL, 16, 17),
+('Gauche (brumeux)',           NULL, 17, 18),
+('Milieu (clairière)',          NULL, 17, 113),
+('Droite (dangereux)',          NULL, 17, 115),
+('Encore plus loin',           NULL, 18, 19),
+('Cueillir',                   NULL, 113, 114),
+('Approcher le portail',        NULL, 114, 24),
+('Retour au départ',            NULL, 114,  6),
+('Cueillir',                   NULL, 19, 20),
+('Brouillard',                 NULL, 19, 21),
+('Cueillir pomme',             NULL, 20, 22),
+('Suivre le brouillard',       NULL, 21, 23),
+('Tomber dans la faille',      NULL, 22, 24),
+('Continuer',                  NULL, 23, 25),
+('Explorer la ruine',          'nonVisited:26', 25, 26),
+('Fouiller la pile',           NULL, 26, 27),
+('Prendre le piédestal',       NULL, 26, 28),
+('Prier devant l\'autel',      NULL, 26, 116),
+('Extraire 20 PO',             NULL, 27, 30),
+('Extraire l\'épée rouillée',  NULL, 28, 31),
+('Quitter les ruines',         NULL, 30, 117),
+('Quitter les ruines',         NULL, 31, 117),
+
+-- Académie : gobelin
+('Utiliser la force',    NULL,      33, 34),
+('Utiliser la magie',    NULL,      33, 35),
+('Combattre',            'Force>=8', 34, 36),
+('Fuir (mort)',          'Force<8',  34, 37),
+('Lancer un sort',       'PM>=8',    35, 38),
+('Fuir (mort)',          'PM<8',     35, 39),
+('Arriver à l\'académie', NULL,     36, 40),
+('Arriver à l\'académie', NULL,     38, 40),
+('Choix de classe',      NULL,      40, 41),
+
+-- Choix de classe (conditions sur stats)
+('Assassin',             'Agi>4',            41, 42),
+('Mage',                 'PM>Force',         41, 51),
+('Guerrier',             'Force>PM',         41, 60),
+('Épéiste magique',      'Force==PM',        41, 69),
+('Support',              NULL,               41, 78),
+
+-- Assassin
+('Devenir assassin',   NULL, 42, 43),
+('Formation',          NULL, 43, 44),
+('Quête',              NULL, 44, 45),
+('Spécialisation',     NULL, 45, 46),
+('Ombre',              NULL, 46, 47),
+('Poison',             NULL, 46, 48),
+('Mission académie',   NULL, 47, 49),
+('Mission académie',   NULL, 48, 49),
+('Fin année 1',        NULL, 49, 50),
+('Début guerre',       NULL, 50, 87),
+
+-- Mage
+('Devenir mage',       NULL, 51, 52),
+('Formation',          NULL, 52, 53),
+('Quête',              NULL, 53, 54),
+('Spécialisation',     NULL, 54, 55),
+('Glace',              NULL, 55, 56),
+('Feu',                NULL, 55, 57),
+('Mission académie',   NULL, 56, 58),
+('Mission académie',   NULL, 57, 58),
+('Fin année 1',        NULL, 58, 59),
+('Début guerre',       NULL, 59, 87),
+
+-- Guerrier
+('Devenir guerrier',   NULL, 60, 61),
+('Formation',          NULL, 61, 62),
+('Quête',              NULL, 62, 63),
+('Voie',               NULL, 63, 64),
+('Épée lourde',        NULL, 64, 65),
+('Bouclier',           NULL, 64, 66),
+('Mission académie',   NULL, 65, 67),
+('Mission académie',   NULL, 66, 67),
+('Fin année 1',        NULL, 67, 68),
+('Début guerre',       NULL, 68, 87),
+
+-- Épéiste magique
+('Devenir épéiste magique', NULL, 69, 70),
+('Formation',               NULL, 70, 71),
+('Quête',                   NULL, 71, 72),
+('Enchantement',            NULL, 72, 73),
+('Défensif',                NULL, 73, 74),
+('Offensif',                NULL, 73, 75),
+('Mission académie',        NULL, 74, 76),
+('Mission académie',        NULL, 75, 76),
+('Fin année 1',             NULL, 76, 77),
+('Début guerre',            NULL, 77, 87),
+
+-- Support
+('Devenir support',    NULL, 78, 79),
+('Formation',          NULL, 79, 80),
+('Quête',              NULL, 80, 81),
+('Voie support',       NULL, 81, 82),
+('Barde',              NULL, 82, 83),
+('Clerc',              NULL, 82, 84),
+('Mission académie',   NULL, 83, 85),
+('Mission académie',   NULL, 84, 85),
+('Fin année 1',        NULL, 85, 86),
+('Début guerre',       NULL, 86, 87),
+
+-- Guerre
+('Royaume',            NULL, 87, 88),
+('Rebelles',           NULL, 87, 89),
+('Neutre',             NULL, 87, 90),
+('Académie',           NULL, 87, 91),
+('Combattre',          NULL, 88, 92),
+('Raid',               NULL, 89, 93),
+('Négocier',           NULL, 90, 94),
+('Défendre',           NULL, 91, 95),
+('Résultat',           NULL, 92, 96),
+('Résultat',           NULL, 92, 97),
+('Résultat',           NULL, 93, 98),
+('Résultat',           NULL, 93, 99),
+('Résultat',           NULL, 94,100),
+('Résultat',           NULL, 94,101),
+('Résultat',           NULL, 95,102),
+('Résultat',           NULL, 95,103),
+('Promouvoir capitaine', NULL, 96,104),
+('Mort héroïque',        NULL, 97,105),
+('Devenir leader',       NULL, 98,106),
+('Trahison et mort',     NULL, 99,107),
+('Paix temporaire',      NULL,100,108),
+('Échec diplomatique',   NULL,101,109),
+('Académie sauvée',      NULL,102,110),
+('Académie en ruines',   NULL,103,111);
+
+-- =========================================================
+-- CLASSES
+-- =========================================================
+INSERT INTO Classe (id, Nom_classe, Element_, Arme) VALUES
+(1, 'Assassin',         'Ombre',   'Dagues'),
+(2, 'Assassin',         'Poison',  'Dagues'),
+(3, 'Mage',             'Glace',   'Bâton'),
+(4, 'Mage',             'Feu',     'Bâton'),
+(5, 'Guerrier',         'Force',   'Épée lourde'),
+(6, 'Guerrier',         'Défense', 'Bouclier'),
+(7, 'Épéiste magique',  'Hybride', 'Épée'),
+(8, 'Support',          'Barde',   'Instrument'),
+(9, 'Support',          'Clerc',   'Sceptre');
+
+-- =========================================================
+-- OBJETS
+-- =========================================================
+INSERT INTO Objet (id, Label, Effet) VALUES
+(1,  'Pierre du départ',     'Symbole du commencement'),
+(2,  'Souvenir solo',        'Renforce la détermination'),
+(3,  'Souvenir avec mère',   'Augmente légèrement l\'agilité'),
+(4,  'Souvenir avec père',   'Augmente légèrement la force'),
+(5,  'Pomme cueillie',       'Petit soin naturel +10 PV'),
+(6,  'Brume légère',         'Permet d\'accéder aux ruines'),
+(7,  'Pile d\'objets',     'Cache de récupération'),
+(8,  'Pièce ancienne',       'Objet de valeur'),
+(9,  'Piédestal épée',       'Support d\'arme ancienne'),
+(10, '20 pièces d\'or',    'Gain d\'argent'),
+(11, 'Épée rouillée',        'Vieille arme récupérable'),
+(12, 'Grimoire ancien',      'Objet de quête mage'),
+(13, 'Arme légendaire',      'Objet de quête guerrier'),
+(14, 'Cristal d\'équilibre','Objet de quête épéiste'),
+(15, 'Herbes rares',         'Objet de quête support'),
+(16, 'Insigne de capitaine', 'Récompense victoire Royaume'),
+(17, 'Emblème rebelle',      'Récompense victoire Rebelles'),
+(18, 'Charte de paix',       'Récompense diplomatie'),
+(19, 'Clé de l\'académie', 'Récompense défense académie'),
+(20, 'Bénédiction des ruines', 'Grâce accordée par les anciens +15PV +50 Argent');
+
+-- =========================================================
+-- OBJETS OBTENUS PAR HISTOIRE
+-- =========================================================
 INSERT INTO obtenue (id_objet, Id_histoire) VALUES
-(1, 6),
-(2, 9),
-(3, 11),
-(4, 12),
-(5, 13),
-(6, 23),
-(7, 25),
-(8, 26),
-(9, 29),
-(10, 30),
-(11, 31),
-(12, 34),
-(13, 33),
-(14, 54),
-(15, 58),
-(16, 62),
-(17, 66),
-(18, 105),
-(19, 107),
-(20, 109),
-(21, 111);
+(1,  6),   -- Pierre du départ à l'arrivée au point de départ
+(2,  8),   -- Souvenir solo
+(3,  9),   -- Souvenir mère
+(4, 10),   -- Souvenir père
+(5, 22),   -- Pomme cueillie
+(6, 21),   -- Brume légère
+(10,30),   -- 20 pièces d\'or
+(11,31),   -- Épée rouillée
+(12,54),   -- Grimoire ancien (quête mage)
+(13,63),   -- Arme légendaire (quête guerrier)
+(14,72),   -- Cristal d\'équilibre (quête épéiste)
+(15,81),   -- Herbes rares (quête support)
+(16,104),  -- Insigne de capitaine
+(17,106),  -- Emblème rebelle
+(18,108),  -- Charte de paix
+(19,110),  -- Clé de l\'académie
+(20,116);  -- Bénédiction des ruines
