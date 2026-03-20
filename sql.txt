@@ -1,6 +1,10 @@
+DROP DATABASE IF EXISTS Story;
+CREATE DATABASE Story CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE Story;
 
-Site histoire-heros.com
-operateur/ Bonk
+-- =========================================================
+-- TABLES
+-- =========================================================
 
 CREATE TABLE Classe(
    id INT AUTO_INCREMENT,
@@ -12,39 +16,25 @@ CREATE TABLE Classe(
 
 CREATE TABLE Objet(
    id INT AUTO_INCREMENT,
-   Label VARCHAR(50) NOT NULL,
-   Effet VARCHAR(50),
+   Label VARCHAR(100) NOT NULL,
+   Effet VARCHAR(255),
    PRIMARY KEY(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE Amelioration(
    Id_Amelioration INT AUTO_INCREMENT,
-   bonus_PV INT,
-   bonus_Force INT,
-   bonus_Agi INT,
-   Bonus_PM INT,
-   bonus_Puissance INT,
-   Bonus_Argent INT,
+   bonus_PV INT DEFAULT 0,
+   bonus_Force INT DEFAULT 0,
+   bonus_Agi INT DEFAULT 0,
+   Bonus_PM INT DEFAULT 0,
+   bonus_Puissance INT DEFAULT 0,
+   Bonus_Argent INT DEFAULT 0,
    PRIMARY KEY(Id_Amelioration)
-) ENGINE=InnoDB;
-
-CREATE TABLE personnage(
-   Id INT AUTO_INCREMENT,
-   PV_base INT NOT NULL,
-   Force_base INT NOT NULL,
-   Agilite_base INT NOT NULL,
-   PM_base INT NOT NULL,
-   Puissance_base INT NOT NULL,
-   argent_base INT NOT NULL,
-   id_1 INT NOT NULL,
-   PRIMARY KEY(Id),
-   UNIQUE(id_1),
-   FOREIGN KEY(id_1) REFERENCES Classe(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE histoire(
    Id_histoire INT AUTO_INCREMENT,
-   texte_histoire VARCHAR(1000),
+   texte_histoire VARCHAR(1000) NOT NULL,
    Id_Amelioration INT NOT NULL,
    PRIMARY KEY(Id_histoire),
    FOREIGN KEY(Id_Amelioration) REFERENCES Amelioration(Id_Amelioration)
@@ -52,17 +42,418 @@ CREATE TABLE histoire(
 
 CREATE TABLE Deboucher(
    Id_Deboucher INT AUTO_INCREMENT,
-   choix VARCHAR(50),
-   Id_histoire INT NOT NULL,
+   choix VARCHAR(100) NOT NULL,
+   Id_histoire_source INT NOT NULL,
+   Id_histoire_destination INT NOT NULL,
    PRIMARY KEY(Id_Deboucher),
-   FOREIGN KEY(Id_histoire) REFERENCES histoire(Id_histoire)
+   FOREIGN KEY(Id_histoire_source) REFERENCES histoire(Id_histoire),
+   FOREIGN KEY(Id_histoire_destination) REFERENCES histoire(Id_histoire)
+) ENGINE=InnoDB;
+
+CREATE TABLE personnage(
+   Id INT AUTO_INCREMENT,
+   Nom_personnage VARCHAR(50) NOT NULL,
+   PV_base INT NOT NULL,
+   Force_base INT NOT NULL,
+   Agilite_base INT NOT NULL,
+   PM_base INT NOT NULL,
+   Puissance_base INT NOT NULL,
+   argent_base INT NOT NULL,
+   id_classe INT NOT NULL,
+   PRIMARY KEY(Id),
+   FOREIGN KEY(id_classe) REFERENCES Classe(id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE obtenue(
-   id INT,
-   Id_histoire INT,
-   PRIMARY KEY(id, Id_histoire),
-   FOREIGN KEY(id) REFERENCES Objet(id),
+   id_objet INT NOT NULL,
+   Id_histoire INT NOT NULL,
+   PRIMARY KEY(id_objet, Id_histoire),
+   FOREIGN KEY(id_objet) REFERENCES Objet(id),
    FOREIGN KEY(Id_histoire) REFERENCES histoire(Id_histoire)
 ) ENGINE=InnoDB;
 
+-- =========================================================
+-- DONNÉES : CLASSES
+-- =========================================================
+
+INSERT INTO Classe (id, Nom_classe, Element_, Arme) VALUES
+(1, 'Assassin', 'Ombre', 'Dagues'),
+(2, 'Assassin', 'Poison', 'Dagues'),
+(3, 'Mage', 'Glace', 'Bâton'),
+(4, 'Mage', 'Feu', 'Bâton'),
+(5, 'Guerrier', 'Force', 'Épée lourde'),
+(6, 'Guerrier', 'Défense', 'Bouclier'),
+(7, 'Épéiste magique', 'Hybride', 'Épée'),
+(8, 'Support', 'Barde', 'Instrument'),
+(9, 'Support', 'Clerc', 'Sceptre');
+
+-- =========================================================
+-- DONNÉES : OBJETS
+-- =========================================================
+
+INSERT INTO Objet (id, Label, Effet) VALUES
+(1, 'Bâton de bois', 'Objet trouvé au réveil'),
+(2, 'Pierre du départ', 'Point central de progression'),
+(3, 'Souvenir solo', 'Renforce la détermination'),
+(4, 'Souvenir avec mère', 'Augmente légèrement l\'agilité'),
+(5, 'Souvenir avec père', 'Augmente légèrement la force'),
+(6, 'Brume légère', 'Permet d\'accéder au chemin brumeux'),
+(7, 'Brume épaisse', 'Accès aux ruines anciennes'),
+(8, 'Pomme cueillie', 'Petit soin naturel'),
+(9, 'Pile d\'objets', 'Cache de récupération'),
+(10, 'Pièce ancienne', 'Objet de valeur'),
+(11, 'Piédestal épée', 'Support d\'arme ancienne'),
+(12, 'Épée rouillée', 'Vieille arme récupérable'),
+(13, '20 pièces d\'or', 'Gain d\'argent'),
+(14, 'Grimoire ancien', 'Objet de quête mage'),
+(15, 'Artefact légendaire', 'Objet de quête guerrier'),
+(16, 'Cristal d\'équilibre', 'Objet de quête épéiste'),
+(17, 'Herbes rares', 'Objet de quête support'),
+(18, 'Insigne de capitaine', 'Récompense de victoire royaume'),
+(19, 'Sceau rebelle', 'Récompense rebelle'),
+(20, 'Charte de paix', 'Récompense faction neutre'),
+(21, 'Emblème de l\'académie', 'Récompense défense académie');
+
+-- =========================================================
+-- DONNÉES : AMÉLIORATIONS
+-- =========================================================
+
+INSERT INTO Amelioration
+(Id_Amelioration, bonus_PV, bonus_Force, bonus_Agi, Bonus_PM, bonus_Puissance, Bonus_Argent) VALUES
+(1, 0, 0, 0, 0, 0, 0),
+(2, 0, 8, 0, 0, 0, 0),
+(3, 0, 0, 4, 0, 0, 0),
+(4, 0, 0, 0, 8, 0, 0),
+(5, 0, 4, 0, 4, 0, 0),
+(6, 10, 0, 0, 0, 0, 0),
+(7, 0, 0, 0, 0, 0, 20),
+(8, 15, 5, 5, 5, 5, 50);
+
+-- =========================================================
+-- DONNÉES : PERSONNAGES
+-- =========================================================
+
+INSERT INTO personnage
+(Id, Nom_personnage, PV_base, Force_base, Agilite_base, PM_base, Puissance_base, argent_base, id_classe) VALUES
+(1, 'Bonk Assassin Ombre', 80, 6, 10, 4, 5, 10, 1),
+(2, 'Bonk Assassin Poison', 80, 6, 10, 4, 5, 10, 2),
+(3, 'Bonk Mage Glace', 70, 3, 6, 10, 8, 10, 3),
+(4, 'Bonk Mage Feu', 70, 3, 6, 10, 8, 10, 4),
+(5, 'Bonk Guerrier Épée lourde', 110, 10, 4, 3, 4, 10, 5),
+(6, 'Bonk Guerrier Bouclier', 120, 8, 3, 3, 4, 10, 6),
+(7, 'Bonk Épéiste magique', 95, 7, 6, 8, 7, 10, 7),
+(8, 'Bonk Support Barde', 75, 4, 6, 9, 8, 10, 8),
+(9, 'Bonk Support Clerc', 90, 4, 5, 10, 8, 10, 9);
+
+-- =========================================================
+-- DONNÉES : HISTOIRES
+-- =========================================================
+
+INSERT INTO histoire (Id_histoire, texte_histoire, Id_Amelioration) VALUES
+(1, 'Début de l\'aventure.', 1),
+(2, 'Dormir ?', 1),
+(3, 'Bonk se rendort paisiblement.', 1),
+(4, 'Dormir une deuxième fois ?', 1),
+(5, 'Bonk meurt de trop dormir dans son sommeil.', 1),
+(6, 'Bonk décide finalement de se lever.', 1),
+(7, 'Es-tu sûr de trop dormir ?', 1),
+(8, 'Bonk câline un loup. Fin étrange mais paisible.', 1),
+(9, 'Bonk arrive à la pierre du départ.', 1),
+
+(10, 'Bonk visite la maison.', 1),
+(11, 'Bonk s\'entraîne seul.', 2),
+(12, 'Bonk s\'entraîne avec sa mère.', 3),
+(13, 'Bonk s\'entraîne avec son père.', 2),
+(14, 'Bonk retourne à la pierre du départ.', 1),
+
+(15, 'Bonk entre dans la forêt.', 1),
+(16, 'Il avance encore dans la forêt.', 1),
+(17, 'Il joue dans la forêt.', 1),
+(18, 'Bonk atteint le milieu de la forêt.', 1),
+(19, 'Il s\'enfonce davantage dans la forêt.', 1),
+(20, 'Un croisement apparaît devant lui.', 1),
+(21, 'Bonk prend à gauche.', 1),
+(22, 'Il va encore plus loin.', 1),
+(23, 'Le brouillard tombe autour de lui.', 1),
+(24, 'Bonk cueille ce qu\'il trouve.', 1),
+(25, 'Le brouillard devient épais.', 1),
+(26, 'Bonk cueille une pomme.', 1),
+(27, 'Une faille dimensionnelle apparaît.', 1),
+(28, 'Bonk découvre une ancienne ruine.', 1),
+(29, 'Il trouve une pile d\'objets.', 1),
+(30, 'Bonk fouille et empile les objets.', 1),
+(31, 'Un piédestal avec une épée apparaît.', 1),
+(32, 'Bonk déblaye les morceaux autour de la ruine.', 1),
+(33, 'Bonk extrait 20 pièces d\'or.', 7),
+(34, 'Bonk extrait une épée rouillée.', 1),
+
+(35, 'Bonk se dirige vers l\'académie.', 1),
+(36, 'Un gobelin apparaît sur le chemin.', 1),
+(37, 'Bonk utilise la force.', 1),
+(38, 'Sa force est-elle suffisante ?', 1),
+(39, 'Bonk tue le gobelin par la force.', 2),
+(40, 'Bonk meurt contre le gobelin en combat physique.', 1),
+(41, 'Bonk utilise la magie.', 1),
+(42, 'Ses PM sont-ils suffisants ?', 1),
+(43, 'Bonk meurt contre le gobelin par manque de magie.', 1),
+(44, 'Bonk tue le gobelin grâce à la magie.', 4),
+(45, 'Bonk arrive à l\'académie.', 1),
+(46, 'Il doit choisir sa classe.', 1),
+
+(47, 'Son agilité augmente.', 3),
+(48, 'Bonk devient assassin.', 1),
+(49, 'Il suit une formation de furtivité.', 1),
+(50, 'Sa première quête consiste à éliminer une cible corrompue.', 1),
+
+(51, 'Ses PM dominent sa force.', 5),
+(52, 'Bonk devient mage.', 1),
+(53, 'Il suit une formation de magie élémentaire.', 1),
+(54, 'Sa quête consiste à récupérer un grimoire ancien.', 1),
+
+(55, 'Sa force domine ses PM.', 5),
+(56, 'Bonk devient guerrier.', 1),
+(57, 'Il suit une formation au combat rapproché.', 1),
+(58, 'Sa quête consiste à forger une arme légendaire.', 1),
+
+(59, 'Sa force et ses PM sont équilibrés.', 5),
+(60, 'Bonk devient épéiste magique.', 1),
+(61, 'Il suit une formation d\'arts hybrides.', 1),
+(62, 'Sa quête consiste à trouver un cristal d\'équilibre.', 1),
+
+(63, 'Bonk choisit la voie support.', 1),
+(64, 'Bonk devient support.', 1),
+(65, 'Il suit une formation de soins et buffs.', 1),
+(66, 'Sa quête consiste à collecter des herbes rares.', 1),
+
+(67, 'Bonk choisit une spécialisation d\'assassin.', 1),
+(68, 'Bonk suit la voie de l\'ombre.', 1),
+(69, 'Bonk suit la voie du poison.', 1),
+(70, 'Mission d\'académie : infiltration.', 1),
+(71, 'Fin de l\'année 1 pour l\'assassin.', 1),
+
+(72, 'Bonk choisit la spécialisation glace.', 1),
+(73, 'Bonk choisit la spécialisation feu.', 1),
+(74, 'Mission d\'académie : protéger la bibliothèque.', 1),
+(75, 'Fin de l\'année 1 pour le mage.', 1),
+
+(76, 'Bonk choisit sa voie de guerrier.', 1),
+(77, 'Il se spécialise en épée lourde.', 1),
+(78, 'Il se spécialise en bouclier.', 1),
+(79, 'Mission d\'académie : défendre le village.', 1),
+(80, 'Fin de l\'année 1 pour le guerrier.', 1),
+
+(81, 'Bonk choisit l\'enchantement de son style.', 1),
+(82, 'Il s\'oriente vers un style défensif.', 1),
+(83, 'Il s\'oriente vers un style offensif.', 1),
+(84, 'Mission d\'académie : escorte diplomatique.', 1),
+(85, 'Fin de l\'année 1 pour l\'épéiste magique.', 1),
+
+(86, 'Bonk choisit sa voie de support.', 1),
+(87, 'Il devient barde.', 1),
+(88, 'Il devient clerc.', 1),
+(89, 'Mission d\'académie : soigner les blessés.', 1),
+(90, 'Fin de l\'année 1 pour le support.', 1),
+
+(91, 'La guerre éclate.', 1),
+(92, 'Bonk doit choisir une faction.', 1),
+(93, 'Bonk rejoint le Royaume.', 1),
+(94, 'Bonk rejoint les Rebelles.', 1),
+(95, 'Bonk reste neutre.', 1),
+(96, 'Bonk reste à l\'académie.', 1),
+
+(97, 'Combat : bataille des plaines.', 1),
+(98, 'Combat : raid nocturne.', 1),
+(99, 'Mission : négocier la paix.', 1),
+(100, 'Bonk défend l\'académie.', 1),
+
+(101, 'Victoire du Royaume ?', 1),
+(102, 'Victoire des Rebelles ?', 1),
+(103, 'La négociation réussit-elle ?', 1),
+(104, 'Bonk survit-il à l\'attaque ?', 1),
+
+(105, 'Bonk est promu capitaine.', 8),
+(106, 'Bonk meurt héroïquement.', 1),
+(107, 'Bonk devient leader rebelle.', 8),
+(108, 'Bonk est trahi et meurt.', 1),
+(109, 'Une paix temporaire est obtenue.', 8),
+(110, 'La diplomatie échoue.', 1),
+(111, 'L\'académie est sauvée.', 8),
+(112, 'L\'académie est détruite.', 1);
+
+-- =========================================================
+-- DONNÉES : DÉBOUCHÉS
+-- =========================================================
+
+INSERT INTO Deboucher (choix, Id_histoire_source, Id_histoire_destination) VALUES
+('Commencer', 1, 2),
+('Oui', 2, 3),
+('Non', 2, 6),
+('Continuer', 3, 4),
+('Oui', 4, 5),
+('Non', 4, 6),
+('Continuer', 6, 7),
+('Oui', 7, 8),
+('Non', 7, 9),
+
+('Maison', 9, 10),
+('Forêt', 9, 15),
+('Académie', 9, 35),
+
+('S\'entraîner seul', 10, 11),
+('S\'entraîner avec mère', 10, 12),
+('S\'entraîner avec père', 10, 13),
+('Retour', 11, 14),
+('Retour', 12, 14),
+('Retour', 13, 14),
+('Revenir à la pierre du départ', 14, 9),
+
+('Avancer', 15, 16),
+('Continuer', 16, 17),
+('Jouer', 17, 18),
+('S\'enfoncer', 18, 19),
+('Continuer', 19, 20),
+('Gauche', 20, 21),
+('Encore plus loin', 21, 22),
+('Brouillard', 22, 23),
+('Cueillir', 22, 24),
+('Suivre la brume', 23, 25),
+('Cueillir pomme', 24, 26),
+('Continuer', 25, 28),
+('Tomber dans la faille', 26, 27),
+('Explorer la ruine', 28, 29),
+('Fouiller', 29, 30),
+('Prendre le piédestal', 29, 31),
+('Déblayer', 30, 32),
+('Extraire 20 PO', 32, 33),
+('Extraire épée rouillée', 31, 34),
+
+('Entrer à l\'académie', 35, 36),
+('Force', 36, 37),
+('Magie', 36, 41),
+('Tester la force', 37, 38),
+('Oui', 38, 39),
+('Non', 38, 40),
+('Tester la magie', 41, 42),
+('Oui', 42, 44),
+('Non', 42, 43),
+('Continuer', 39, 45),
+('Continuer', 44, 45),
+('Choix de classe', 45, 46),
+
+('Assassin', 46, 47),
+('Mage', 46, 51),
+('Guerrier', 46, 55),
+('Épéiste magique', 46, 59),
+('Support', 46, 63),
+
+('Devenir assassin', 47, 48),
+('Formation', 48, 49),
+('Quête', 49, 50),
+('Spécialisation', 50, 67),
+
+('Devenir mage', 51, 52),
+('Formation', 52, 53),
+('Quête', 53, 54),
+('Spécialisation', 54, 67),
+
+('Devenir guerrier', 55, 56),
+('Formation', 56, 57),
+('Quête', 57, 58),
+('Spécialisation', 58, 76),
+
+('Devenir épéiste magique', 59, 60),
+('Formation', 60, 61),
+('Quête', 61, 62),
+('Enchantement', 62, 81),
+
+('Devenir support', 63, 64),
+('Formation', 64, 65),
+('Quête', 65, 66),
+('Voie support', 66, 86),
+
+('Ombre', 67, 68),
+('Poison', 67, 69),
+('Mission académie', 68, 70),
+('Mission académie', 69, 70),
+('Fin année 1', 70, 71),
+('Début guerre', 71, 91),
+
+('Glace', 67, 72),
+('Feu', 67, 73),
+('Mission académie', 72, 74),
+('Mission académie', 73, 74),
+('Fin année 1', 74, 75),
+('Début guerre', 75, 91),
+
+('Épée lourde', 76, 77),
+('Bouclier', 76, 78),
+('Mission académie', 77, 79),
+('Mission académie', 78, 79),
+('Fin année 1', 79, 80),
+('Début guerre', 80, 91),
+
+('Défensif', 81, 82),
+('Offensif', 81, 83),
+('Mission académie', 82, 84),
+('Mission académie', 83, 84),
+('Fin année 1', 84, 85),
+('Début guerre', 85, 91),
+
+('Barde', 86, 87),
+('Clerc', 86, 88),
+('Mission académie', 87, 89),
+('Mission académie', 88, 89),
+('Fin année 1', 89, 90),
+('Début guerre', 90, 91),
+
+('Choisir une faction', 91, 92),
+('Royaume', 92, 93),
+('Rebelles', 92, 94),
+('Neutre', 92, 95),
+('Académie', 92, 96),
+
+('Combat', 93, 97),
+('Combat', 94, 98),
+('Mission', 95, 99),
+('Défendre', 96, 100),
+
+('Résultat', 97, 101),
+('Résultat', 98, 102),
+('Résultat', 99, 103),
+('Résultat', 100, 104),
+
+('Oui', 101, 105),
+('Non', 101, 106),
+('Oui', 102, 107),
+('Non', 102, 108),
+('Oui', 103, 109),
+('Non', 103, 110),
+('Oui', 104, 111),
+('Non', 104, 112);
+
+-- =========================================================
+-- DONNÉES : OBJETS OBTENUS
+-- =========================================================
+
+INSERT INTO obtenue (id_objet, Id_histoire) VALUES
+(1, 6),
+(2, 9),
+(3, 11),
+(4, 12),
+(5, 13),
+(6, 23),
+(7, 25),
+(8, 26),
+(9, 29),
+(10, 30),
+(11, 31),
+(12, 34),
+(13, 33),
+(14, 54),
+(15, 58),
+(16, 62),
+(17, 66),
+(18, 105),
+(19, 107),
+(20, 109),
+(21, 111);
