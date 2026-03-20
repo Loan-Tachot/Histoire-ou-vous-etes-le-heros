@@ -277,6 +277,7 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Quitter les ruines',         NULL, 31, 117),
 
 -- Académie : gobelin
+('Prendre le cheminde l'académie', NULL, 32, 33)
 ('Utiliser la force',    NULL,      33, 34),
 ('Utiliser la magie',    NULL,      33, 35),
 ('Combattre',            'Force>=8', 34, 36),
