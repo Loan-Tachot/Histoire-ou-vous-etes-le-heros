@@ -69,20 +69,15 @@ function calculerStats($pdo, $chemins) {
 }
 
 // ── Évalue une condition de stat ─────────────────────────────
-// Formats supportés :
-//   Force>=8        PM<8        Agi>4       PM>Force    Force==PM
-//   nonVisited:26   (caché si histoire 26 déjà visitée)
 function evaluerCondition($condition, $stats) {
     if (empty($condition)) return true;
 
-    // Condition spéciale : nonVisited:ID — visible seulement si pas encore visité
     if (strpos($condition, 'nonVisited:') === 0) {
         $idHistoire = (int) substr($condition, strlen('nonVisited:'));
         $chemins    = isset($_SESSION['chemins']) ? $_SESSION['chemins'] : array();
         return !in_array($idHistoire, $chemins);
     }
 
-    // Remplacer les noms de stats par leurs valeurs
     $expr = $condition;
     $expr = str_replace('Puissance', $stats['Puissance'], $expr);
     $expr = str_replace('Agilite',   $stats['Agilite'],   $expr);
@@ -91,10 +86,8 @@ function evaluerCondition($condition, $stats) {
     $expr = str_replace('PM',        $stats['PM'],         $expr);
     $expr = str_replace('PV',        $stats['PV'],         $expr);
 
-    // Sécurité : n'autoriser que chiffres et opérateurs
     if (!preg_match('/^[\d\s<>=!]+$/', $expr)) return false;
 
-    // Évaluer l'expression
     return eval("return ($expr);");
 }
 
@@ -135,21 +128,67 @@ class Deboucher {
     }
 }
 
-// ── Objet ────────────────────────────────────────────────────
+// ── Objet / Succès ───────────────────────────────────────────
+// Les objets de la BDD sont utilisés comme succès.
+// Ils sont stockés dans $_SESSION['succes'] sous la forme :
+//   [ id_objet => timestamp_deblocage, ... ]
+// Cette clé de session n'est JAMAIS réinitialisée entre les parties.
 class Objet {
     private $pdo;
     public function __construct($pdo) { $this->pdo = $pdo; }
 
-    public function getObtained($chemins) {
+    // Retourne tous les succès débloqués avec leur date
+    public function getSucces() {
+        if (!$this->pdo) return array();
+        $ids = isset($_SESSION['succes']) ? array_keys($_SESSION['succes']) : array();
+        if (empty($ids)) return array();
+
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $s = $this->pdo->prepare(
+            "SELECT id, Label, Effet FROM Objet WHERE id IN ($placeholders)"
+        );
+        $s->execute($ids);
+        $objets = $s->fetchAll();
+
+        foreach ($objets as &$o) {
+            $o['debloque_le'] = isset($_SESSION['succes'][$o['id']])
+                ? $_SESSION['succes'][$o['id']] : '';
+        }
+        return $objets;
+    }
+
+    // Retourne le total des succès disponibles dans la BDD
+    public function getTotalSucces() {
+        if (!$this->pdo) return 0;
+        return (int) $this->pdo->query("SELECT COUNT(*) FROM Objet")->fetchColumn();
+    }
+
+    // Détecte et enregistre les nouveaux succès débloqués par les chemins donnés
+    // Retourne uniquement ceux qui viennent d'être débloqués (pour la notification)
+    public function enregistrerNouveauxSucces($chemins) {
         if (!$this->pdo || empty($chemins)) return array();
+
         $placeholders = implode(',', array_fill(0, count($chemins), '?'));
         $s = $this->pdo->prepare(
-            "SELECT o.Label, o.Effet
+            "SELECT o.id, o.Label, o.Effet
              FROM Objet o
              JOIN obtenue ob ON o.id = ob.id_objet
              WHERE ob.Id_histoire IN ($placeholders)"
         );
         $s->execute($chemins);
-        return $s->fetchAll();
+        $tous = $s->fetchAll();
+
+        if (!isset($_SESSION['succes'])) {
+            $_SESSION['succes'] = array();
+        }
+
+        $nouveaux = array();
+        foreach ($tous as $o) {
+            if (!array_key_exists($o['id'], $_SESSION['succes'])) {
+                $_SESSION['succes'][$o['id']] = date('d/m/Y');
+                $nouveaux[] = $o;
+            }
+        }
+        return $nouveaux;
     }
 }

@@ -15,7 +15,7 @@
         <span class="stat" title="Puissance">⚡ <?= $stats['Puissance'] ?></span>
         <span class="stat" title="Argent">🪙 <?= $stats['Argent'] ?></span>
         <nav class="topnav">
-            <a href="index.php?page=inventaire">Inventaire</a>
+            <a href="index.php?page=succes">Succès</a>
             <a href="index.php?page=accueil">Menu</a>
         </nav>
     </header>
@@ -32,6 +32,26 @@
         </span>
         <?php endforeach; ?>
     </div>
+    <?php endif; ?>
+
+    <?php if (!empty($nouveauxSucces)): ?>
+    <div class="succes-notif" id="succes-notif">
+        <?php foreach ($nouveauxSucces as $s): ?>
+        <div class="succes-item">
+            <span class="succes-icon">🏆</span>
+            <div>
+                <strong>Succès débloqué !</strong>
+                <span><?= htmlspecialchars($s['Label']) ?></span>
+            </div>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <script>
+        setTimeout(function() {
+            var notif = document.getElementById('succes-notif');
+            if (notif) notif.classList.add('succes-notif-hide');
+        }, 4000);
+    </script>
     <?php endif; ?>
 
     <main class="card story-card">
@@ -51,7 +71,8 @@
         </div>
         <?php else: ?>
         <p class="fin">— Fin de ce chemin —</p>
-        <a class="btn btn-sec" href="index.php?page=accueil">Recommencer</a>
+        <a class="btn btn-sec" href="index.php?page=accueil">Retour au menu</a>
+        <a class="btn" href="index.php?page=jeu&reset=1">Nouvelle partie</a>
         <?php endif; ?>
     </main>
 

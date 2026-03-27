@@ -601,3 +601,67 @@ button[type="submit"]:hover {
     from { opacity: 0; transform: scale(.6) translateY(-6px); }
     to   { opacity: 1; transform: scale(1)  translateY(0); }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   SUCCÈS — NOTIFICATION EN JEU
+═══════════════════════════════════════════════════════════ */
+.succes-notif {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+    pointer-events: none;
+    transition: opacity .6s ease;
+}
+
+.succes-notif-hide {
+    opacity: 0;
+}
+
+.succes-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--bg-panel);
+    border: 1px solid var(--gold);
+    border-radius: var(--radius);
+    padding: .75rem 1.2rem;
+    box-shadow: var(--glow-gold);
+    animation: succes-slide .4s ease;
+}
+
+.succes-item strong {
+    display: block;
+    color: var(--gold-bright);
+    font-family: var(--font-title);
+    font-size: .85rem;
+    letter-spacing: .05em;
+}
+
+.succes-item span {
+    color: var(--parchment);
+    font-size: .9rem;
+}
+
+.succes-icon {
+    font-size: 1.6rem;
+    line-height: 1;
+}
+
+@keyframes succes-slide {
+    from { opacity: 0; transform: translateX(2rem); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   SUCCÈS — PAGE LISTE
+═══════════════════════════════════════════════════════════ */
+.item-list li small {
+    display: block;
+    color: var(--parchment-3);
+    font-size: .8rem;
+    margin-top: .2rem;
+}

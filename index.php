@@ -15,13 +15,23 @@ switch ($page) {
         (new PersonnageController())->create();
         break;
     case 'jeu':
-        (new JeuController(new Histoire($pdo), new Deboucher($pdo), $pdo))->index();
+        (new JeuController(
+            new Histoire($pdo),
+            new Deboucher($pdo),
+            new Objet($pdo),
+            $pdo
+        ))->index();
         break;
     case 'choix':
-        (new JeuController(new Histoire($pdo), new Deboucher($pdo), $pdo))->choix();
+        (new JeuController(
+            new Histoire($pdo),
+            new Deboucher($pdo),
+            new Objet($pdo),
+            $pdo
+        ))->choix();
         break;
-    case 'inventaire':
-        (new InventaireController(new Objet($pdo)))->index();
+    case 'succes':
+        (new SuccesController(new Objet($pdo)))->index();
         break;
     default:
         (new AccueilController())->index();

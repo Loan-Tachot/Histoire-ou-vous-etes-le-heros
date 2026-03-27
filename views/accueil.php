@@ -14,6 +14,7 @@
             <a class="btn" href="index.php?page=creer_personnage">Nouvelle aventure</a>
             <?php if (isset($_SESSION['perso_nom'])): ?>
             <a class="btn btn-sec" href="index.php?page=jeu">Continuer</a>
+            <a class="btn btn-ghost" href="index.php?page=succes">Succès</a>
             <?php endif; ?>
             <a class="btn btn-ghost" href="presentation.html">Le monde</a>
         </nav>
