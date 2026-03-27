@@ -95,8 +95,8 @@ INSERT INTO histoire (Id_histoire, texte_histoire, Id_Amelioration) VALUES
 (6, 'La Pierre du Départ se dresse au carrefour des trois chemins, massive et couverte de lichens orangés. Des centaines de noms y sont gravés — tous ceux qui, avant Bonk, ont choisi leur destin à cet endroit précis. Il pose la main sur la roche froide et sent quelque chose vibrer sous ses doigts, comme un souvenir enfoui dans la pierre. À sa gauche, le toit de tuiles rouges de la maison familiale. Droit devant, la lisière sombre de la Grande Forêt. À sa droite, la route pavée qui mène vers les tours de l\'Académie.', 1),
 -- Bloc 3 : Maison
 (7, 'La maison familiale est exactement comme dans ses souvenirs — et pourtant tout lui semble plus petit, plus fragile. La poutre fissurée au plafond, le carrelage dépareillé, l\'odeur de soupe aux herbes qui imprègne les murs depuis vingt ans. Bonk s\'arrête sur le seuil. Il y a quelque chose de réconfortant et de douloureux à la fois dans ce retour. Il a encore le temps de s\'entraîner ici avant de partir pour de bon.', 1),
-(8, 'Bonk s\'entraîne seul dans la cour de terre battue, sous un ciel de plomb. Pas de maître, pas de partenaire — juste lui, ses poings, et la résistance du monde. Il frappe le pieu de bois jusqu\'à ce que ses mains saignent, soulève les pierres jusqu\'à ce que ses épaules brûlent, court autour de la cour jusqu\'à ce que ses poumons crient grâce. Quand il s\'arrête enfin, le soleil est bas sur l\'horizon. Il est seul, épuisé — et plus fort.', 2),
-(9, 'La mère de Bonk se déplace comme l\'eau — fluide, imprévisible, impossible à saisir. Elle lui montre comment tomber sans se blesser, comment rouler pour esquiver, comment placer ses pieds pour ne jamais perdre l\'équilibre. Les deux heures passent comme un souffle. Quand elle le prend dans ses bras pour lui dire au revoir, il sent qu\'il a hérité de quelque chose d\'elle. Pas seulement de la technique — quelque chose de plus profond, inscrit dans les muscles.', 3),
+(8, 'Bonk s\'entraîne seul dans la cour de terre battue, sous un ciel de plomb. Pas de maître, pas de partenaire — juste lui, ses poings, et la résistance du monde. Il frappe le pieu de bois jusqu\'à ce que ses mains saignent, soulève les pierres jusqu\'à ce que ses épaules brûlent, court autour de la cour jusqu\'à ce que ses poumons crient grâce. Quand il s\'arrête enfin, le soleil est bas sur l\'horizon. Il est seul, épuisé — et plus fort.', 5),
+(9, 'La mère de Bonk se déplace comme l\'eau — fluide, imprévisible, impossible à saisir. Elle lui montre comment tomber sans se blesser, comment rouler pour esquiver, comment placer ses pieds pour ne jamais perdre l\'équilibre. Les deux heures passent comme un souffle. Quand elle le prend dans ses bras pour lui dire au revoir, il sent qu\'il a hérité de quelque chose d\'elle. Pas seulement de la technique — quelque chose de plus profond, inscrit dans les muscles.', 4),
 (10, 'Le père de Bonk ne parle pas pendant l\'entraînement. Il frappe. Il bloque. Il corrige d\'une claque sur l\'épaule ou d\'un regard sévère. Les coups sont durs, les reprises longues, les pauses inexistantes. Mais quand le vieux s\'arrête enfin et pose la main sur la nuque de son fils, Bonk comprend que c\'est sa façon à lui de dire qu\'il est fier. Il repart avec les côtes meurtries et la force décuplée.', 2),
 (11, 'Bonk repasse le seuil de la maison une dernière fois — ou peut-être pas la dernière, qui sait. La Pierre du Départ l\'attend au carrefour, impassible, avec ses trois chemins et ses centaines de noms gravés. Il respire l\'air du matin, ajuste son sac sur son épaule, et reprend la route. Il se sent différent. Plus prêt.', 1),
 -- Bloc 4 : Forêt
@@ -228,8 +228,8 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Se lever',             NULL,          2, 4),
 -- 20ème fois -> géré en PHP (compteur session), on met un nœud spécial
 -- Se lever -> test stats
-('Continuer',            'PV<110',      4, 6),
-('Loupé la calèche',     'PV>=110',     4, 5),
+('Continuer',            'PV<130',      4, 6),
+('Loupé la calèche',     'PV>=130',     4, 5),
 
 -- Point de départ
 ('Aller à la maison',    NULL,          6, 7),
@@ -277,7 +277,7 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Quitter les ruines',         NULL, 31, 117),
 
 -- Académie : gobelin
-('Prendre le cheminde l'académie', NULL, 32, 33)
+("Prendre le cheminde l'académie", NULL, 32, 33),
 ('Utiliser la force',    NULL,      33, 34),
 ('Utiliser la magie',    NULL,      33, 35),
 ('Combattre',            'Force>=8', 34, 36),

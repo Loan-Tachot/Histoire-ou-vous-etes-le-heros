@@ -43,7 +43,7 @@ class PersonnageController extends BaseController {
         $_SESSION['perso_nom']    = htmlspecialchars($nom);
         $_SESSION['chemins']      = array();
         $_SESSION['stats']        = statsBase();
-        $_SESSION['nb_dodo']      = 0;   // compteur sommeil
+        $_SESSION['nb_dodo']      = 0;
         $this->redirect('index.php?page=jeu&histoire=1');
     }
 }
@@ -100,9 +100,9 @@ class JeuController extends BaseController {
             'nom'      => $nom,
             'stats'    => $stats,
             'gainStats'=> $gainStats,
-            'histoire'=> $histoire,
-            'texte'   => $texte,
-            'choix'   => $choix,
+            'histoire' => $histoire,
+            'texte'    => $texte,
+            'choix'    => $choix,
         ));
     }
 
@@ -114,11 +114,15 @@ class JeuController extends BaseController {
         if ($dest) {
             $idDest = (int) $dest['Id_histoire_destination'];
 
-            // Compteur sommeil : histoires 1 et 2 = dormir encore
-            // Histoire 2 = "Dormir encore" — on incrémente
+            // Retour à la phase de sommeil → réinitialisation complète
             if (in_array($idDest, array(1, 2))) {
                 $_SESSION['nb_dodo'] = isset($_SESSION['nb_dodo'])
                     ? $_SESSION['nb_dodo'] + 1 : 1;
+
+                // Réinitialiser les stats et les chemins
+                $_SESSION['chemins'] = array();
+                $_SESSION['stats']   = statsBase();
+
                 // 20ème fois → mort
                 if ($_SESSION['nb_dodo'] >= 20) {
                     $this->redirect('index.php?page=jeu&histoire=3');

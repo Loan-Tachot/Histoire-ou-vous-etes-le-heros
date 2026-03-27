@@ -65,5 +65,13 @@
         </ul>
     </details>
     <?php endif; ?>
+
+    <script>
+    history.pushState(null, '', location.href);
+    window.addEventListener('popstate', function() {
+        history.pushState(null, '', location.href);
+        window.location.href = 'index.php?page=accueil';
+    });
+    </script>
 </body>
 </html>
