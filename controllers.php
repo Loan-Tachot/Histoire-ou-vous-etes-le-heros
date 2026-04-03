@@ -56,11 +56,11 @@ class PersonnageController extends BaseController {
         // Conserver les succès existants
         $succes = isset($_SESSION['succes']) ? $_SESSION['succes'] : array();
 
-        $_SESSION['perso_nom']  = htmlspecialchars($nom);
-        $_SESSION['chemins']    = array();
-        $_SESSION['stats']      = statsBase();
-        $_SESSION['nb_dodo']    = 0;
-        $_SESSION['succes']     = $succes;
+        $_SESSION['perso_nom'] = htmlspecialchars($nom);
+        $_SESSION['chemins']   = array();
+        $_SESSION['stats']     = statsBase();
+        $_SESSION['nb_dodo']   = 0;
+        $_SESSION['succes']    = $succes;
 
         $this->redirect('index.php?page=jeu&histoire=1');
     }
@@ -88,10 +88,10 @@ class JeuController extends BaseController {
         if (isset($_GET['reset']) && $_GET['reset'] == '1') {
             $succes = isset($_SESSION['succes']) ? $_SESSION['succes'] : array();
 
-            $_SESSION['chemins']    = array();
-            $_SESSION['stats']      = statsBase();
-            $_SESSION['nb_dodo']    = 0;
-            $_SESSION['succes']     = $succes;
+            $_SESSION['chemins'] = array();
+            $_SESSION['stats']   = statsBase();
+            $_SESSION['nb_dodo'] = 0;
+            $_SESSION['succes']  = $succes;
 
             $this->redirect('index.php?page=jeu&histoire=1');
             return;
@@ -187,5 +187,13 @@ class SuccesController extends BaseController {
             'succes' => $this->objets->getSucces(),
             'total'  => $this->objets->getTotalSucces(),
         ));
+    }
+}
+
+// ── MondeController ──────────────────────────────────────────
+// Pas de dépendance BDD — la vue monde.php est entièrement statique
+class MondeController extends BaseController {
+    public function index() {
+        $this->render('monde');
     }
 }

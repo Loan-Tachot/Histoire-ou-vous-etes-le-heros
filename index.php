@@ -33,6 +33,9 @@ switch ($page) {
     case 'succes':
         (new SuccesController(new Objet($pdo)))->index();
         break;
+    case 'monde':
+        (new MondeController())->index();
+        break;
     default:
         (new AccueilController())->index();
         break;

@@ -4,10 +4,10 @@ if (file_exists(__DIR__ . '/config.local.php')) {
     require __DIR__ . '/config.local.php';
 }
 
-$host = isset($host) ? $host : '192.168.56.200';
-$db   = isset($db)   ? $db   : 'Story';
-$user = isset($user) ? $user : 'operateur';
-$pass = isset($pass) ? $pass : 'Bonk';
+$host = isset($host) ? $host : '127.0.0.1';
+$db   = isset($db)   ? $db   : 'tachot';
+$user = isset($user) ? $user : 'tachot';
+$pass = isset($pass) ? $pass : 'fORwXHm6S7We';
 
 $pdo      = null;
 $db_error = null;
@@ -128,14 +128,35 @@ class Deboucher {
     }
 }
 
+// ── Classe ───────────────────────────────────────────────────
+class Classe {
+    private $pdo;
+    public function __construct($pdo) { $this->pdo = $pdo; }
+
+    public function getAll() {
+        if (!$this->pdo) return array();
+        return $this->pdo->query(
+            "SELECT * FROM Classe ORDER BY Nom_classe ASC"
+        )->fetchAll();
+    }
+}
+
 // ── Objet / Succès ───────────────────────────────────────────
 // Les objets de la BDD sont utilisés comme succès.
 // Ils sont stockés dans $_SESSION['succes'] sous la forme :
-//   [ id_objet => timestamp_deblocage, ... ]
+//   [ id_objet => date_deblocage, ... ]
 // Cette clé de session n'est JAMAIS réinitialisée entre les parties.
 class Objet {
     private $pdo;
     public function __construct($pdo) { $this->pdo = $pdo; }
+
+    // Retourne tous les objets (pour la page monde)
+    public function getAll() {
+        if (!$this->pdo) return array();
+        return $this->pdo->query(
+            "SELECT id, Label, Effet FROM Objet ORDER BY id ASC"
+        )->fetchAll();
+    }
 
     // Retourne tous les succès débloqués avec leur date
     public function getSucces() {
