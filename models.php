@@ -36,10 +36,10 @@ if (session_status() === PHP_SESSION_NONE) {
 function statsBase() {
     return array(
         'PV'        => 100,
-        'Force'     => 10,
-        'Agilite'   => 10,
-        'PM'        => 5,
-        'Puissance' => 10,
+        'Force'     => 3,
+        'Agilite'   => 1,
+        'PM'        => 3,
+        'Puissance' => 1,
         'Argent'    => 100,
     );
 }

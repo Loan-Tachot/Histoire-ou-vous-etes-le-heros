@@ -1,7 +1,16 @@
-DROP DATABASE IF EXISTS Story;
-CREATE DATABASE Story CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE Story;
+use tachot;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS 
+    Deboucher,
+    obtenue,
+    histoire,
+    Objet,
+    Classe,
+    Amelioration;
+
+SET FOREIGN_KEY_CHECKS = 1;
 -- =========================================================
 -- TABLES
 -- =========================================================
@@ -250,24 +259,24 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 -- Forêt
 ('Aller dans la forêt',        NULL, 12, 13),
 ('Jouer dans la forêt',        NULL, 13, 14),
-('Retour à la maison',         NULL, 14, 112),
+('Retour à la pierre de Départ',         NULL, 14, 6),
 ('Milieu forêt',               NULL, 14, 15),
 ('S\'enfoncer dans la forêt',  NULL, 15, 16),
 ('Croisement',                 NULL, 16, 17),
 ('Gauche (brumeux)',           NULL, 17, 18),
-('Milieu (clairière)',          NULL, 17, 113),
-('Droite (dangereux)',          NULL, 17, 115),
+('Milieu (clairière)',         NULL, 17, 113),
+('Droite (dangereux)',         NULL, 17, 115),
 ('Encore plus loin',           NULL, 18, 19),
 ('Cueillir',                   NULL, 113, 114),
-('Approcher le portail',        NULL, 114, 24),
-('Retour au départ',            NULL, 114,  6),
-('Cueillir',                   NULL, 19, 20),
-('Brouillard',                 NULL, 19, 21),
+('Approcher le portail',       NULL, 114, 24),
+('Retour au départ',           NULL, 114,  6),
+('Suivre le chemin',           NULL, 19, 14),
+('Brouillard',                 'nonVisited:26', 19, 21),
 ('Cueillir pomme',             NULL, 20, 22),
 ('Suivre le brouillard',       NULL, 21, 23),
 ('Tomber dans la faille',      NULL, 22, 24),
 ('Continuer',                  NULL, 23, 25),
-('Explorer la ruine',          'nonVisited:26', 25, 26),
+('Explorer la ruine',          NULL, 25, 26),
 ('Fouiller la pile',           NULL, 26, 27),
 ('Prendre le piédestal',       NULL, 26, 28),
 ('Prier devant l\'autel',      NULL, 26, 116),
@@ -290,8 +299,8 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 
 -- Choix de classe (conditions sur stats)
 ('Assassin',             'Agi>4',            41, 42),
-('Mage',                 'PM>Force',         41, 51),
-('Guerrier',             'Force>PM',         41, 60),
+('Mage',                 'PM>=Force',         41, 51),
+('Guerrier',             'Force>=PM',         41, 60),
 ('Épéiste magique',      'Force==PM',        41, 69),
 ('Support',              NULL,               41, 78),
 
@@ -364,10 +373,10 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Raid',               NULL, 89, 93),
 ('Négocier',           NULL, 90, 94),
 ('Défendre',           NULL, 91, 95),
-('Résultat',           NULL, 92, 96),
-('Résultat',           NULL, 92, 97),
-('Résultat',           NULL, 93, 98),
-('Résultat',           NULL, 93, 99),
+('Résultat',           "Force>23", 92, 96),
+('Résultat',           "Force<24", 92, 97),
+('Résultat',           "Force>23", 93, 98),
+('Résultat',           "Force<24", 93, 99),
 ('Résultat',           NULL, 94,100),
 ('Résultat',           NULL, 94,101),
 ('Résultat',           NULL, 95,102),
@@ -405,11 +414,11 @@ INSERT INTO Objet (id, Label, Effet) VALUES
 (4,  'Souvenir avec père',   'Augmente légèrement la force'),
 (5,  'Pomme cueillie',       'Petit soin naturel +10 PV'),
 (6,  'Brume légère',         'Permet d\'accéder aux ruines'),
-(7,  'Pile d\'objets',     'Cache de récupération'),
-(8,  'Pièce ancienne',       'Objet de valeur'),
-(9,  'Piédestal épée',       'Support d\'arme ancienne'),
-(10, '20 pièces d\'or',    'Gain d\'argent'),
-(11, 'Épée rouillée',        'Vieille arme récupérable'),
+(7,  "C'est froid !",     'Freez !'),
+(8,  "C'est Chaud !",       'Allumé le feu !'),
+(9,  'Encore trop courte ?', 'Did you know that you scale by faith ?'),
+(10, 'Elles ont encore une valleur ?',    'Trash society : We need to talk...'),
+(11, 'Épée rouillée',        'It\'s dangerous to go alone! Take this.'),
 (12, 'Grimoire ancien',      'Objet de quête mage'),
 (13, 'Arme légendaire',      'Objet de quête guerrier'),
 (14, 'Cristal d\'équilibre','Objet de quête épéiste'),
@@ -418,7 +427,15 @@ INSERT INTO Objet (id, Label, Effet) VALUES
 (17, 'Emblème rebelle',      'Récompense victoire Rebelles'),
 (18, 'Charte de paix',       'Récompense diplomatie'),
 (19, 'Clé de l\'académie', 'Récompense défense académie'),
-(20, 'Bénédiction des ruines', 'Grâce accordée par les anciens +15PV +50 Argent');
+(20, 'Bénédiction des ruines', 'Grâce accordée par les anciens'),
+(21, 'Mon Grand Ami Hypnos' , 'POURQUOI !?'),
+(22, "Tu compte protégée quoi ?" , "La promesse"),
+(23, "Défence magique sur une épée ?" , "Tu sais que ta classe est offensive ?"),
+(24, "Plus de Puissance !" , "Ton épée brule en plus de coupé"),
+(25, "Les dragons son pour toi ?" , "Au moin tu chante bien"),
+(26, "Tu as déjà prier a un lieu incongru ?" , "Ressoie les bienfait de la croyance !"),
+(27, "Dans les Méandre de l'espace temps" , "spmet ecapse'l ed erdnaéM sel snaD");
+
 
 -- =========================================================
 -- OBJETS OBTENUS PAR HISTOIRE
@@ -430,6 +447,9 @@ INSERT INTO obtenue (id_objet, Id_histoire) VALUES
 (4, 10),   -- Souvenir père
 (5, 22),   -- Pomme cueillie
 (6, 21),   -- Brume légère
+(7,56),    -- C'est froid !
+(8, 57),   -- C'est chaud !
+(9, 65),   -- Encore trop courte ?
 (10,30),   -- 20 pièces d\'or
 (11,31),   -- Épée rouillée
 (12,54),   -- Grimoire ancien (quête mage)
@@ -440,4 +460,11 @@ INSERT INTO obtenue (id_objet, Id_histoire) VALUES
 (17,106),  -- Emblème rebelle
 (18,108),  -- Charte de paix
 (19,110),  -- Clé de l\'académie
-(20,116);  -- Bénédiction des ruines
+(20,116),  -- Bénédiction des ruines
+(21,3),    -- Amitié d'Hypnos
+(22,66),   -- Tu compte protégée quoi ?
+(23,74),   -- Défence magique sur une épée ?
+(24,75),   -- Plus de Puissance !
+(25,83),   -- Les dragons son pour toi ?
+(26,84),   -- Tu as déjà prier a un lieu incongru ?
+(27,24);   -- Dans les Méandre de l'espace temps

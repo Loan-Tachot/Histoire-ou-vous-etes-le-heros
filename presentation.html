@@ -2,82 +2,273 @@
 <html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>Présentation du thème fantastique - Histoire où vous êtes le héros</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Présentation du thème fantastique - Story</title>
     <link rel="stylesheet" href="css/style.css">
+
     <style>
+        .page-presentation {
+            min-height: 100vh;
+            padding: 3rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .presentation-card {
+            width: 100%;
+            max-width: 1100px;
+            background: linear-gradient(160deg, #2a1c0a 0%, #1a1008 60%, #0f0b05 100%);
+            border: 1px solid var(--gold-dim);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-card), var(--glow-gold);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .presentation-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(184,134,11,.08), transparent 40%);
+            pointer-events: none;
+        }
+
+        .presentation-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .presentation-header p {
+            max-width: 800px;
+            margin: 1rem auto 0;
+            color: var(--parchment-2);
+            font-size: 1.1rem;
+        }
+
         .slide {
             display: none;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid #3498db;
-            border-radius: 10px;
-            background: rgba(52, 152, 219, 0.1);
+            animation: fadeSlide .5s ease;
         }
+
         .slide.active {
             display: block;
         }
-        .nav-buttons {
-            text-align: center;
-            margin: 20px 0;
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .nav-buttons button {
-            margin: 0 10px;
+
+        .slide-card {
+            background: rgba(242, 232, 208, 0.04);
+            border: 1px solid rgba(184,134,11,.25);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .slide-card h2 {
+            margin-bottom: 1rem;
+            border-bottom: 1px solid rgba(184,134,11,.25);
+            padding-bottom: .8rem;
+        }
+
+        .slide-card p {
+            color: var(--parchment-2);
+            margin-bottom: 1rem;
+        }
+
+        .slide-card ul {
+            list-style: none;
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .slide-card li {
+            background: rgba(255,255,255,.03);
+            border-left: 4px solid var(--gold);
+            padding: 1rem 1.2rem;
+            border-radius: var(--radius-sm);
+            color: var(--parchment-2);
+        }
+
+        .slide-card strong {
+            color: var(--gold-bright);
+            font-family: var(--font-title);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn-nav,
+        .btn-retour {
+            background: linear-gradient(180deg, var(--gold) 0%, var(--gold-dim) 100%);
+            color: var(--bg-dark);
+            border: none;
+            border-radius: var(--radius);
+            padding: .9rem 1.8rem;
+            font-family: var(--font-title);
+            font-size: .95rem;
+            letter-spacing: .05em;
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,.4);
+        }
+
+        .btn-nav:hover,
+        .btn-retour:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(184,134,11,.35);
+        }
+
+        .btn-retour {
+            display: inline-block;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .footer-page {
+            text-align: center;
+            color: var(--parchment-3);
+            font-size: .9rem;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .presentation-card {
+                padding: 2rem 1.2rem;
+            }
+
+            .slide-card {
+                padding: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Présentation du thème fantastique</h1>
-    <p>Découvrez l'univers magique de "Histoire où vous êtes le héros", un jeu de rôle textuel où vous incarnez un héros dans un monde de fantasy épique.</p>
+    <main class="page-presentation">
+        <section class="presentation-card">
+            <header class="presentation-header">
+                <h1>Présentation du thème fantastique</h1>
+                <p>
+                    Découvrez l'univers de <strong>Story</strong>, un jeu narratif où chaque choix
+                    modifie votre aventure grâce aux histoires, améliorations, objets,
+                    classes et débouchés enregistrés dans la base de données.
+                </p>
+            </header>
 
-    <div id="slides">
-        <div class="slide active" id="slide1">
-            <h2>Le Monde de Fantasy</h2>
-            <p>Plongez dans un univers médiéval fantastique rempli de créatures mythiques, de magie ancienne et d'aventures sans fin. Votre histoire se déroule dans un royaume où les éléments naturels et la magie coexistent harmonieusement.</p>
-        </div>
-        <div class="slide" id="slide2">
-            <h2>Les Classes de Personnages</h2>
-            <p>Choisissez parmi différentes classes, chacune associée à un élément et une arme spécifique :</p>
-            <ul>
-                <li><strong>Guerrier</strong> : Maître des armes physiques, lié à la terre.</li>
-                <li><strong>Mage</strong> : Manipulateur de la magie, élément du feu.</li>
-                <li><strong>Voleur</strong> : Expert en furtivité, élément de l'air.</li>
-                <li><strong>Prêtre</strong> : Guérisseur spirituel, élément de l'eau.</li>
-            </ul>
-        </div>
-        <div class="slide" id="slide3">
-            <h2>Les Statistiques et l'Évolution</h2>
-            <p>Votre personnage évolue au fil de l'aventure :</p>
-            <ul>
-                <li><strong>PV</strong> : Points de Vie, votre santé.</li>
-                <li><strong>Force</strong> : Puissance physique.</li>
-                <li><strong>Agilité</strong> : Vitesse et dextérité.</li>
-                <li><strong>PM</strong> : Points de Magie.</li>
-                <li><strong>Puissance</strong> : Puissance magique.</li>
-                <li><strong>Argent</strong> : Monnaie pour acheter des objets.</li>
-            </ul>
-        </div>
-        <div class="slide" id="slide4">
-            <h2>Les Objets Magiques</h2>
-            <p>Collectez des objets dotés d'effets spéciaux :</p>
-            <ul>
-                <li>Épées enchantées</li>
-                <li>Potions de soin</li>
-                <li>Artefacts anciens</li>
-                <li>Armures magiques</li>
-            </ul>
-        </div>
-        <div class="slide" id="slide5">
-            <h2>L'Histoire Ramifiée</h2>
-            <p>Vos choix déterminent le déroulement de l'aventure. Chaque décision peut mener à des quêtes épiques, des combats légendaires ou des découvertes mystérieuses. Êtes-vous prêt à devenir le héros de votre propre légende ?</p>
-        </div>
-    </div>
+            <div id="slides">
+                <article class="slide active" id="slide1">
+                    <div class="slide-card">
+                        <h2>Le Monde de Story</h2>
+                        <p>
+                            La table <strong>histoire</strong> contient tous les textes narratifs du jeu.
+                            Chaque histoire est reliée à une amélioration et peut mener à plusieurs chemins.
+                        </p>
+                        <ul>
+                            <li>Univers médiéval fantastique</li>
+                            <li>Forêts, académies, villages et ruines</li>
+                            <li>Créatures comme gobelins, loups et dragons</li>
+                            <li>Choix multiples grâce à la table <strong>Deboucher</strong></li>
+                        </ul>
+                    </div>
+                </article>
 
-    <div class="nav-buttons">
-        <button onclick="prevSlide()">Précédent</button>
-        <button onclick="nextSlide()">Suivant</button>
-    </div>
+                <article class="slide" id="slide2">
+                    <div class="slide-card">
+                        <h2>Les Classes disponibles</h2>
+                        <p>
+                            Les données des personnages sont stockées dans la table <strong>Classe</strong>.
+                        </p>
+                        <ul>
+                            <li><strong>Guerrier</strong> — Arme lourde et force physique</li>
+                            <li><strong>Mage</strong> — Maîtrise des PM et des éléments</li>
+                            <li><strong>Assassin</strong> — Agilité et discrétion</li>
+                            <li><strong>Épéiste magique</strong> — Équilibre entre force et magie</li>
+                            <li><strong>Support</strong> — Soins, buffs et protection</li>
+                        </ul>
+                    </div>
+                </article>
 
-    <a class="btn" href="index.php?page=accueil">Retour à l'accueil</a>
+                <article class="slide" id="slide3">
+                    <div class="slide-card">
+                        <h2>Les statistiques et améliorations</h2>
+                        <p>
+                            La table <strong>Amelioration</strong> permet de modifier les statistiques du joueur selon ses choix.
+                        </p>
+                        <ul>
+                            <li><strong>PV</strong> : Points de vie</li>
+                            <li><strong>Force</strong> : Attaque physique</li>
+                            <li><strong>Agi</strong> : Rapidité et esquive</li>
+                            <li><strong>PM</strong> : Réserve magique</li>
+                            <li><strong>Puissance</strong> : Intensité des sorts</li>
+                            <li><strong>Argent</strong> : Richesse et achats</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="slide" id="slide4">
+                    <div class="slide-card">
+                        <h2>Les objets du jeu</h2>
+                        <p>
+                            Les objets sont enregistrés dans la table <strong>Objet</strong> et associés à une histoire grâce à <strong>obtenue</strong>.
+                        </p>
+                        <ul>
+                            <li>Épées enchantées</li>
+                            <li>Potions de soin</li>
+                            <li>Artefacts anciens</li>
+                            <li>Armures et protections</li>
+                            <li>Pièces d'or et trésors cachés</li>
+                        </ul>
+                    </div>
+                </article>
+
+                <article class="slide" id="slide5">
+                    <div class="slide-card">
+                        <h2>Les débouchés et conditions</h2>
+                        <p>
+                            La table <strong>Deboucher</strong> gère tous les choix possibles du joueur.
+                        </p>
+                        <ul>
+                            <li>Chaque histoire peut avoir plusieurs choix</li>
+                            <li>Les conditions utilisent les statistiques du joueur</li>
+                            <li>Exemples : <code>Force &gt;= 8</code>, <code>PM &gt; Force</code></li>
+                            <li>Les choix modifient la suite de l'aventure</li>
+                            <li>Plusieurs fins sont possibles selon le parcours</li>
+                        </ul>
+                    </div>
+                </article>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-nav" onclick="prevSlide()">Précédent</button>
+                <button class="btn-nav" onclick="nextSlide()">Suivant</button>
+            </div>
+
+            <div class="nav-buttons">
+                <a class="btn-retour" href="index.php?page=accueil">Retour à l'accueil</a>
+            </div>
+        </section>
+
+        <footer class="footer-page">
+            <p>&copy; 2026 Projet SLAM — Base de données Story</p>
+        </footer>
+    </main>
 
     <script>
         let currentSlide = 0;
@@ -98,9 +289,5 @@
             showSlide(currentSlide);
         }
     </script>
-
-    <footer>
-        <p>&copy; 2026 Projet SLAM, usage éducatif</p>
-    </footer>
 </body>
 </html>
