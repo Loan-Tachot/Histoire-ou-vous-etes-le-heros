@@ -69,13 +69,25 @@ function calculerStats($pdo, $chemins) {
 }
 
 // ── Évalue une condition de stat ─────────────────────────────
+// Formats supportés :
+//   Force>=8        PM<8        Agi>4       PM>Force    Force==PM
+//   nonVisited:26   visible seulement si l'histoire 26 n'a PAS été visitée
+//   visited:12      visible seulement si l'histoire 12 A déjà été visitée
 function evaluerCondition($condition, $stats) {
     if (empty($condition)) return true;
 
+    $chemins = isset($_SESSION['chemins']) ? $_SESSION['chemins'] : array();
+
+    // Condition : visible seulement si NON visité
     if (strpos($condition, 'nonVisited:') === 0) {
         $idHistoire = (int) substr($condition, strlen('nonVisited:'));
-        $chemins    = isset($_SESSION['chemins']) ? $_SESSION['chemins'] : array();
         return !in_array($idHistoire, $chemins);
+    }
+
+    // Condition : visible seulement si déjà visité
+    if (strpos($condition, 'visited:') === 0) {
+        $idHistoire = (int) substr($condition, strlen('visited:'));
+        return in_array($idHistoire, $chemins);
     }
 
     $expr = $condition;

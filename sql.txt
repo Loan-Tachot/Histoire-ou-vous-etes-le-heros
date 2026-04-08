@@ -252,24 +252,28 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Retour au départ',           NULL,  8, 11),
 ('Retour au départ',           NULL,  9, 11),
 ('Retour au départ',           NULL, 10, 11),
-('Retour à la pierre',         NULL, 11,  6),
+('Retour à la pierre',         'nonVisited:12', 11,  6),
+('Calèche déjà partie',        'visited:12', 11,  5),
 ('Retour à la forêt',          NULL, 112, 12),
-('Retour au départ',           NULL, 117,  6),
+('Retour au départ',           'nonVisited:12', 117,  6),
+('Calèche déjà partie',        'visited:12', 117,  5),
 
 -- Forêt
 ('Aller dans la forêt',        NULL, 12, 13),
 ('Jouer dans la forêt',        NULL, 13, 14),
-('Retour à la pierre de Départ',         NULL, 14, 6),
+('Retour à la pierre de Départ',         'nonVisited:12', 14,  6),
+('Calèche déjà partie',        'visited:12', 14,  5),
 ('Milieu forêt',               NULL, 14, 15),
 ('S\'enfoncer dans la forêt',  NULL, 15, 16),
 ('Croisement',                 NULL, 16, 17),
 ('Gauche (brumeux)',           NULL, 17, 18),
 ('Milieu (clairière)',         NULL, 17, 113),
-('Droite (dangereux)',         NULL, 17, 115),
+('Droite (dangereux)',         'Agilite<3', 17, 115),
 ('Encore plus loin',           NULL, 18, 19),
 ('Cueillir',                   NULL, 113, 114),
 ('Approcher le portail',       NULL, 114, 24),
-('Retour au départ',           NULL, 114,  6),
+('Retour au départ',           'nonVisited:12', 114,  6),
+('Calèche déjà partie',        'visited:12', 114,  5),
 ('Suivre le chemin',           NULL, 19, 14),
 ('Brouillard',                 'nonVisited:26', 19, 21),
 ('Cueillir pomme',             NULL, 20, 22),
@@ -287,8 +291,8 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 
 -- Académie : gobelin
 ("Prendre le cheminde l'académie", NULL, 32, 33),
-('Utiliser la force',    NULL,      33, 34),
-('Utiliser la magie',    NULL,      33, 35),
+('Utiliser la force',    'Force>=3', 33, 34),
+('Utiliser la magie',    'PM>=3',    33, 35),
 ('Combattre',            'Force>=8', 34, 36),
 ('Fuir (mort)',          'Force<8',  34, 37),
 ('Lancer un sort',       'PM>=8',    35, 38),
@@ -369,10 +373,10 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Rebelles',           NULL, 87, 89),
 ('Neutre',             NULL, 87, 90),
 ('Académie',           NULL, 87, 91),
-('Combattre',          NULL, 88, 92),
-('Raid',               NULL, 89, 93),
-('Négocier',           NULL, 90, 94),
-('Défendre',           NULL, 91, 95),
+('Combattre',          'Force>=11', 88, 92),
+('Raid',               'Agilite>=3', 89, 93),
+('Négocier',           'Puissance>=3', 90, 94),
+('Défendre',           'PV>=100', 91, 95),
 ('Résultat',           "Force>23", 92, 96),
 ('Résultat',           "Force<24", 92, 97),
 ('Résultat',           "Force>23", 93, 98),
@@ -468,3 +472,147 @@ INSERT INTO obtenue (id_objet, Id_histoire) VALUES
 (25,83),   -- Les dragons son pour toi ?
 (26,84),   -- Tu as déjà prier a un lieu incongru ?
 (27,24);   -- Dans les Méandre de l'espace temps
+-- =========================================================
+-- EXTENSION : ÉPILOGUE + TERRES OUBLIÉES
+-- Nouvelles améliorations (9-14)
+-- =========================================================
+
+INSERT INTO Amelioration (Id_Amelioration, bonus_PV, bonus_Force, bonus_Agi, Bonus_PM, bonus_Puissance, Bonus_Argent) VALUES
+(9,   0,  0,  6, 0,  0,   0),   -- +Agi (fuite)
+(10,  0,  0,  0, 0,  6,   0),   -- +Puissance (faille)
+(11,  0,  0,  0, 0,  0,  30),   -- +Argent (commerce)
+(12, 20,  0,  0, 0,  0,   0),   -- +PV (survie)
+(13,  0,  6,  0, 0,  6,   0),   -- +Force+Puissance (duel)
+(14, 10,  4,  4, 4,  4,  20);   -- épilogue glorieux
+
+-- =========================================================
+-- BLOC 7 : ÉPILOGUE (118-141)
+-- S'accroche aux fins victorieuses 104, 106, 108, 110
+-- =========================================================
+
+INSERT INTO histoire (Id_histoire, texte_histoire, Id_Amelioration) VALUES
+
+-- ── Épilogue commun ─────────────────────────────────
+(118, 'Trois jours après la fin des combats, un messager frappe à la porte de Bonk. Le sceau sur la lettre est celui du Conseil Suprême — une institution dont on murmure l\'existence depuis des années sans jamais la voir agir. Le message est court : "Une faille s\'est ouverte au nord des Terres Oubliées. Vous êtes convoqué." Bonk plie la lettre. Il savait que la paix ne durerait pas.', 1),
+
+-- ── Choix d\'entrée dans les Terres Oubliées ────────
+(119, 'La route vers les Terres Oubliées traverse trois jours de plaines arides. Au premier village frontière, un vieux marchand aborde Bonk. Il a des informations sur la faille — des cartes, des témoignages de survivants. Son prix : cent pièces d\'or. Ce n\'est pas donné. Mais l\'ignorance a parfois un coût encore plus élevé.', 1),
+(120, 'Bonk paie le marchand. Les cartes sont précises, les témoignages glaçants. La faille n\'est pas naturelle — elle a été ouverte intentionnellement par quelqu\'un qui connaît la magie des ruines. Les survivants parlent d\'une silhouette encapuchonnée, d\'un symbole gravé dans la pierre, et d\'une odeur de cire fondue et de paille humide. Bonk reconnaît cette odeur.', 11),
+(121, 'Bonk repart sans les cartes. Les Terres Oubliées sont devant lui — étranges, silencieuses, hostiles. Il avancera à l\'instinct. Ce n\'est pas la première fois qu\'il entre quelque part sans savoir ce qui l\'attend.', 1),
+
+-- ── Terres Oubliées : entrée ────────────────────────
+(122, 'Les Terres Oubliées tiennent leur nom. Ici, les cartes sont fausses, les boussoles tournent en rond, et le soleil semble hésiter sur sa trajectoire. Le sol est craquelé comme de la porcelaine ancienne. Des structures à moitié enfouies émergent çà et là — pas des ruines ordinaires. Quelque chose les a brisées de l\'intérieur.', 1),
+(123, 'Un camp de réfugiés s\'est installé à la lisière. Des gens qui ont fui quelque chose qu\'ils ne savent pas nommer. Bonk s\'arrête. Une vieille femme lui tend une écuelle de soupe sans qu\'il ait rien demandé. "Vous avez le regard de quelqu\'un qui va plus loin", dit-elle. "Mangez d\'abord."', 12),
+(124, 'La faille est visible depuis ici — une déchirure verticale dans le ciel lui-même, d\'un violet profond, qui pulse comme un cœur géant. Des créatures en sortent par intermittence : pas des monstres, pas des hommes. Quelque chose entre les deux, avec des yeux qui brillent de la même couleur que la faille.', 1),
+
+-- ── Branche Agilité ─────────────────────────────────
+(125, 'Une des créatures fonce droit sur Bonk. Elle est rapide — plus rapide que tout ce qu\'il a combattu. Elle ne frappe pas : elle cherche à l\'encercler, à l\'épuiser, à lui couper toute retraite. Bonk doit choisir entre tenir bon ou trouver une faille dans ses mouvements et fuir vers la faille principale.', 1),
+(126, 'Bonk fait confiance à son corps. Il plonge, roule, se faufile entre deux colonnes effondrées, utilise le terrain comme un allié. La créature le suit — mais Bonk est plus rapide dans les espaces restreints. Il sort de l\'encerclement et se retrouve face à l\'entrée de la faille. La créature s\'arrête au seuil. Elle ne peut pas entrer.', 9),
+(127, 'La créature le rattrape. Pas d\'échappatoire, pas de ruse assez rapide. Bonk se retrouve immobilisé contre une paroi de pierre. La créature l\'observe, tourne la tête — et repart. Comme si elle avait vérifié quelque chose et conclu que Bonk n\'était pas ce qu\'elle cherchait. Il reste seul, tremblant, face à la faille.', 1),
+
+-- ── Branche Puissance ───────────────────────────────
+(128, 'La faille pulse. À proximité, Bonk sent sa magie réagir — pas de manière agressive, plutôt comme une reconnaissance. La faille est sensible à la puissance magique. Il pourrait tenter de la sceller de l\'intérieur, mais cela demande une concentration et une puissance qu\'il n\'est peut-être pas sûr de posséder.', 1),
+(129, 'Bonk entre dans la faille. L\'espace à l\'intérieur défie toute logique — des couloirs qui n\'existent pas, de la lumière qui vient de nulle part, des sons qui ressemblent à des voix sans en être. Au centre, une pierre noire absorbe toute la lumière alentour. Bonk pose les deux mains dessus et libère tout ce qu\'il a.', 10),
+(130, 'La pierre résiste. Elle absorbe la magie de Bonk comme une éponge absorbe l\'eau — sans limite apparente. Il sent ses réserves se vider, ses mains brûler. Il tient. La faille tremble. Puis quelque chose cède — pas la pierre, mais la résistance autour d\'elle. La faille se referme de l\'intérieur. Bonk s\'effondre dans l\'herbe dehors, vidé mais vivant.', 10),
+(131, 'La magie de Bonk n\'est pas suffisante. La pierre boit tout ce qu\'il donne et en redemande. Il doit reculer avant de se vider entièrement. La faille pulse plus fort qu\'avant, comme stimulée par la tentative. Bonk ressort en courant. La faille reste ouverte.', 1),
+
+-- ── Branche Argent ──────────────────────────────────
+(132, 'Au cœur des Terres Oubliées, une ville fantôme. Les bâtiments sont intacts — personne n\'est parti dans la précipitation. Les habitants ont simplement disparu. Mais les boutiques sont encore approvisionnées, les coffres encore remplis. Et dans la mairie, une carte gravée dans la pierre indique l\'emplacement exact de la source de la faille.', 1),
+(133, 'Bonk trouve la source : un laboratoire souterrain, intact. Des fioles, des notes, des machines dont il ne comprend pas le fonctionnement. Et un coffre-fort dont la combinaison est un montant exact en pièces d\'or — comme si son créateur avait anticipé que seul quelqu\'un de suffisamment riche pour traverser les Terres Oubliées méritait de savoir.', 1),
+(134, 'Le coffre s\'ouvre. À l\'intérieur : un artefact qui neutralise la faille à distance, des notes qui expliquent tout, et une lettre adressée à "Celui qui viendra après moi". Bonk prend tout. La faille se ferme dans un silence total trois heures plus tard, depuis l\'autre côté du monde.', 11),
+(135, 'Bonk n\'a pas assez. Le coffre reste fermé. Il repart avec les notes partielles qu\'il a pu déchiffrer — suffisamment pour comprendre le problème, pas assez pour le résoudre seul. Il faudra trouver quelqu\'un d\'autre. La faille attend.', 1),
+
+-- ── Branche PV : Duel final ──────────────────────────
+(136, 'La silhouette encapuchonnée est là. Devant la faille, immobile, elle attend Bonk comme si elle savait qu\'il viendrait. Elle retire son capuchon. Bonk reconnaît le visage — quelqu\'un qu\'il a croisé à l\'Académie, un visage familier devenu étranger. "J\'ai ouvert la faille pour toi", dit-il. "Pour voir si tu étais vraiment ce qu\'ils disent."', 1),
+(137, 'Le duel commence. L\'adversaire est puissant — plus technique que brutal, plus patient qu\'impulsif. Il cherche les blessures de Bonk, les endroits où il a déjà été touché. Bonk doit encaisser pour trouver une ouverture. Chaque coup reçu est un investissement.', 1),
+(138, 'Bonk tient. Son corps a absorbé tout ce que l\'adversaire lui a donné et en a fait de l\'énergie. Au moment où l\'autre commence à fatiguer, Bonk frappe — une fois, proprement, au bon endroit. L\'adversaire tombe. La faille se referme d\'elle-même, comme si elle n\'attendait que cette conclusion.', 13),
+(139, 'Les blessures de Bonk sont trop profondes. Il s\'accroche, il refuse de tomber, mais son corps ne suit plus. L\'adversaire le laisse au sol — pas par pitié, mais par déception. "Pas encore", dit-il en disparaissant dans la faille. Bonk reste là, seul, à regarder le ciel des Terres Oubliées.', 1),
+
+-- ── Fins de l\'extension ──────────────────────────────
+(140, 'Bonk ressort des Terres Oubliées sous un ciel qui ressemble enfin à un ciel normal. La faille est fermée. Il ne sait pas si c\'est pour toujours — il n\'est sûr de rien dans ce monde. Mais il sait qu\'il a fait ce qu\'il devait faire, avec ce qu\'il avait. C\'est tout ce qu\'on peut demander à quelqu\'un.', 14),
+(141, 'La faille est toujours ouverte. Bonk revient au Conseil Suprême avec ce qu\'il sait — fragments de vérité, cartes partielles, questions sans réponses. Ce n\'est pas la victoire qu\'on attendait de lui. Mais c\'est honnête. Et parfois, l\'honnêteté est le seul héroïsme qu\'on peut se permettre.', 1);
+
+-- =========================================================
+-- DÉBOUCHÉS DE L'EXTENSION
+-- =========================================================
+
+INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire_destination) VALUES
+
+-- Accroche épilogue depuis les 4 fins victorieuses
+('Répondre à la convocation',  NULL, 104, 118),
+('Répondre à la convocation',  NULL, 106, 118),
+('Répondre à la convocation',  NULL, 108, 118),
+('Répondre à la convocation',  NULL, 110, 118),
+
+-- Entrée dans les Terres Oubliées
+('Acheter les informations',   'Argent>=120', 119, 120),
+('Refuser et avancer seul',    NULL,          119, 121),
+
+-- Navigation dans les Terres
+('Avancer vers la faille',     NULL, 120, 122),
+('Avancer vers la faille',     NULL, 121, 122),
+('S\'arrêter au camp',         NULL, 122, 123),
+('Ignorer le camp',            'Puissance>=3', 122, 124),
+('Continuer vers la faille',   NULL, 123, 124),
+
+-- Branche Agilité
+('Affronter la créature',      NULL,         124, 125),
+('Fuir en s\'esquivant',       'Agilite>=5', 125, 126),
+('Fuir (échoué)',              'Agilite<5',  125, 127),
+('Entrer dans la faille',      NULL,         126, 128),
+('Entrer dans la faille',      NULL,         127, 128),
+
+-- Branche Puissance
+('Tenter de sceller la faille', 'Puissance>=6', 128, 129),
+('Chercher une autre voie',     'Puissance<6',  128, 132),
+('Libérer toute sa puissance',  NULL,           129, 130),
+('Reculer avant d\'être vidé',  NULL,           129, 131),
+('Revenir au camp',             NULL,           131, 123),
+
+-- Branche Argent
+('Explorer la ville fantôme',   'Argent>=100',    132, 133),
+('Ouvrir le coffre',            'Argent>=120', 133, 134),
+('Le coffre reste fermé',       'Argent<120',  133, 135),
+
+-- Branche PV : duel final
+('Affronter la silhouette',     'Force>=11',      124, 136),
+('Se battre',                   NULL,         136, 137),
+('Tenir bon',                   'PV>=115',    137, 138),
+('Tomber',                      'PV<115',     137, 139),
+
+-- Convergence vers les fins
+('Rentrer',   NULL, 130, 140),
+('Rentrer',   NULL, 134, 140),
+('Rentrer',   NULL, 138, 140),
+('Rentrer',   NULL, 126, 140),
+('Rentrer',   NULL, 131, 141),
+('Rentrer',   NULL, 135, 141),
+('Rentrer',   NULL, 139, 141);
+
+-- =========================================================
+-- NOUVEAUX OBJETS / SUCCÈS
+-- =========================================================
+
+INSERT INTO Objet (id, Label, Effet) VALUES
+(28, 'Carte des Terres Oubliées',   'Connaissance de l\'inconnu — achetée au prix fort'),
+(29, 'Rescapé du camp',             'La soupe d\'une étrangère vaut parfois une armure'),
+(30, 'Ombre esquivée',              'La créature a cherché — et n\'a pas trouvé'),
+(31, 'Pierre Scellée',              'La faille est fermée. Pour l\'instant.'),
+(32, 'Clé du laboratoire secret',   'L\'argent ouvre des portes que la force ne peut pas forcer'),
+(33, 'Témoin du duel final',        'Vous avez regardé votre adversaire en face'),
+(34, 'Héros des Terres Oubliées',   'La faille est fermée. Le monde respire.'),
+(35, 'Rapport incomplet',           'Parfois la vérité partielle est tout ce qu\'on peut offrir');
+
+-- =========================================================
+-- ASSOCIATION SUCCÈS ↔ HISTOIRES
+-- =========================================================
+
+INSERT INTO obtenue (id_objet, Id_histoire) VALUES
+(28, 120),  -- Carte des Terres Oubliées (achat info marchand)
+(29, 123),  -- Rescapé du camp (arrêt au camp de réfugiés)
+(30, 126),  -- Ombre esquivée (fuite réussie)
+(31, 130),  -- Pierre Scellée (faille scellée par la puissance)
+(32, 134),  -- Clé du laboratoire (coffre ouvert avec l'argent)
+(33, 138),  -- Témoin du duel final (duel gagné)
+(34, 140),  -- Héros des Terres Oubliées (fin victorieuse)
+(35, 141);  -- Rapport incomplet (fin partielle)
