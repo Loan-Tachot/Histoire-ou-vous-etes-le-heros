@@ -1,6 +1,8 @@
 <?php
+
 require_once __DIR__ . '/models.php';
 require_once __DIR__ . '/controllers.php';
+
 
 $page = isset($_GET['page']) ? $_GET['page'] : 'accueil';
 
@@ -17,3 +19,4 @@ switch ($page) {
     case 'monde':  (new MondeController())->index();                 break;
     default:       (new AccueilController())->index();               break;
 }
+

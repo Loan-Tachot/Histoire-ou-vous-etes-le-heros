@@ -268,12 +268,42 @@ INSERT INTO histoire (Id_histoire, texte_histoire, Id_Amelioration) VALUES
 
 -- ── Fins de l\'extension ──────────────────────────────
 (140, 'Bonk ressort des Terres Oubliées sous un ciel qui ressemble enfin à un ciel normal. La faille est fermée. Il ne sait pas si c\'est pour toujours — il n\'est sûr de rien dans ce monde. Mais il sait qu\'il a fait ce qu\'il devait faire, avec ce qu\'il avait. C\'est tout ce qu\'on peut demander à quelqu\'un.', 14),
-(141, 'La faille est toujours ouverte. Bonk revient au Conseil Suprême avec ce qu\'il sait — fragments de vérité, cartes partielles, questions sans réponses. Ce n\'est pas la victoire qu\'on attendait de lui. Mais c\'est honnête. Et parfois, l\'honnêteté est le seul héroïsme qu\'on peut se permettre.', 1);
+(141, 'La faille est toujours ouverte. Bonk revient au Conseil Suprême avec ce qu\'il sait — fragments de vérité, cartes partielles, questions sans réponses. Ce n\'est pas la victoire qu\'on attendait de lui. Mais c\'est honnête. Et parfois, l\'honnêteté est le seul héroïsme qu\'on peut se permettre.', 1),
+-- ── Action de condition ───────────────────────────────
+(142, 'Bonk unit sa force et sa magie dans un même mouvement. Ses muscles se tendent, ses veines brillent d\'une lumière pâle, et l\'air autour de lui vibre comme avant un orage. Quand il frappe, ce n\'est pas seulement un coup : c\'est une onde de choc. La silhouette est projetée plusieurs mètres en arrière. Même la faille vacille, comme si elle venait de reconnaître une puissance qu\'elle croyait disparue.', 13),
+
+(143, 'Bonk ne lève pas son arme. Il parle. Il demande pourquoi, il demande depuis quand, il demande ce que l\'autre espérait vraiment trouver au fond de cette faille. La silhouette hésite. Derrière sa colère, Bonk voit autre chose : de la peur, de la solitude, peut-être même du regret. Pendant quelques secondes, la faille cesse de pulser. Comme si elle aussi attendait la réponse.', 1),
+
+(144, 'Bonk pose l\'objet ancien au pied de la pierre noire. Pendant un instant, rien ne se passe. Puis les gravures de l\'artefact s\'illuminent, une à une, répondant aux symboles de la faille. La pierre absorbe l\'objet dans un silence absolu. Une partie de la faille se referme aussitôt. Bonk comprend qu\'il vient de perdre quelque chose d\'important — mais peut-être de sauver quelque chose de plus grand.', 10),
+
+(145, 'Bonk découvre un passage dissimulé derrière un mur effondré. Sans les ressources nécessaires pour atteindre cet endroit et sans l\'agilité pour se glisser dans l\'ouverture, il ne l\'aurait jamais trouvé. Le tunnel descend profondément sous les ruines jusqu\'à une salle oubliée. Au centre repose une ancienne carte militaire des Terres Oubliées, couverte d\'annotations sur la faille et ceux qui l\'ont créée.', 11),
+
+(146, 'Le symbole gravé sur la pierre n\'est pas inconnu. Bonk l\'a déjà vu auparavant — sur un document, un mur, ou une relique récupérée bien avant d\'arriver ici. Ce n\'est pas un simple emblème : c\'est la marque d\'une ancienne faction de l\'Académie, un groupe obsédé par les mondes parallèles et les pouvoirs interdits. Soudain, beaucoup de choses prennent sens.', 1),
+
+(147, 'La corruption de la faille tente d\'entrer dans l\'esprit de Bonk. Des voix lui promettent du pouvoir, des réponses, une place au sommet de quelque chose de plus grand que le monde. Sa vision se brouille. Son coeur ralentit. Mais il tient. Sa puissance agit comme un rempart, et sa volonté refuse de céder. Quand il rouvre les yeux, une partie de la faille s\'est consumée d\'elle-même, incapable de le briser.', 13),
+-- ── Action de classe ──────────────────────────────────
+(148, 'Bonk se fond dans les ombres des ruines. Même les créatures de la faille semblent perdre sa trace.', 1),
+(149, 'Le poison agit lentement. La créature vacille avant même d\'atteindre Bonk.', 1),
+(150, 'Un mur de glace surgit devant la faille et ralentit les monstres.', 1),
+(151, 'Les flammes de Bonk frappent la faille comme une tempête.', 1),
+(152, 'La porte explose sous le choc de l\'épée lourde.', 1),
+(153, 'Bonk reste devant les réfugiés, bouclier levé. Aucun ennemi ne passe.', 1),
+(154, 'La lame de Bonk se couvre de runes lumineuses.', 1),
+(155, 'La musique de Bonk calme les réfugiés et affaiblit la faille.', 1),
+(156, 'Une lumière douce enveloppe le camp. Les blessés respirent plus facilement.', 1),
+(157, 'Quand Bonk dégaine l\'épée rouillée, la créature recule. Elle reconnaît cette arme.', 1),
+(158, 'Les gravures sur la lame répondent à celles de la faille. Cette épée était ici avant lui.', 1),
+(159, 'La vieille serrure cède sous la lame rouillée.', 1),
+(160, 'La silhouette fixe l\'épée et son expression change. "Où as-tu trouvé ça ?"', 1),
+(161, 'L\'épée rouillée s\'embrase d\'une lumière ancienne. La rouille tombe comme de la poussière.', 1),
+(162, 'L\'épée vibre faiblement, mais rien d\'autre ne se produit.', 1);
+
 -- =========================================================
 -- DÉBOUCHÉS  (condition_requise : NULL = toujours visible)
 -- Format condition : StatNom operateur valeur
 -- ex: Force>=8  PM<8  Agi>4  PM>Force  Force>PM  Force==PM
 -- =========================================================
+
 INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire_destination) VALUES
 -- Réveil
 ('Dormir encore',        NULL,          1, 2),
@@ -297,17 +327,17 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Retour au départ',           NULL,  8, 11),
 ('Retour au départ',           NULL,  9, 11),
 ('Retour au départ',           NULL, 10, 11),
-('Retour à la pierre',         'nonVisited:12', 11,  6),
-('Calèche déjà partie',        'visited:12', 11,  5),
+('Retour à la pierre',         NULL, 11,  6),
+('Calèche déjà partie',        'foretVisites>=2', 11,  5),
 ('Retour à la forêt',          NULL, 112, 12),
-('Retour au départ',           'nonVisited:12', 117,  6),
-('Calèche déjà partie',        'visited:12', 117,  5),
+('Retour au départ',           NULL, 117,  6),
+('Calèche déjà partie',        'foretVisites>=2', 117,  5),
 
 -- Forêt
 ('Aller dans la forêt',        NULL, 12, 13),
 ('Jouer dans la forêt',        NULL, 13, 14),
-('Retour à la pierre de Départ',         'nonVisited:12', 14,  6),
-('Calèche déjà partie',        'visited:12', 14,  5),
+('Retour à la pierre de Départ',         NULL, 14,  6),
+('Calèche déjà partie',        'foretVisites>=2', 14,  5),
 ('Milieu forêt',               NULL, 14, 15),
 ('S\'enfoncer dans la forêt',  NULL, 15, 16),
 ('Croisement',                 NULL, 16, 17),
@@ -317,8 +347,8 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Encore plus loin',           NULL, 18, 19),
 ('Cueillir',                   NULL, 113, 114),
 ('Approcher le portail',       NULL, 114, 24),
-('Retour au départ',           'nonVisited:12', 114,  6),
-('Calèche déjà partie',        'visited:12', 114,  5),
+('Retour au départ',           NULL, 114,  6),
+('Calèche déjà partie',        'foretVisites>=2', 114,  5),
 ('Suivre le chemin',           NULL, 19, 14),
 ('Brouillard',                 'nonVisited:26', 19, 21),
 ('Cueillir pomme',             NULL, 20, 22),
@@ -347,7 +377,7 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Choix de classe',      NULL,      40, 41),
 
 -- Choix de classe (conditions sur stats)
-('Assassin',             'Agi>4',            41, 42),
+('Assassin',             'Agilite>4',            41, 42),
 ('Mage',                 'PM>=Force',         41, 51),
 ('Guerrier',             'Force>=PM',         41, 60),
 ('Épéiste magique',      'Force==PM',        41, 69),
@@ -419,17 +449,17 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Neutre',             NULL, 87, 90),
 ('Académie',           NULL, 87, 91),
 ('Combattre',          'Force>=11', 88, 92),
-('Raid',               'Agilite>=3', 89, 93),
-('Négocier',           'Puissance>=3', 90, 94),
-('Défendre',           'PV>=100', 91, 95),
+('Raid',               NULL, 89, 93),
+('Négocier',           NULL, 90, 94),
+('Défendre',           NULL, 91, 95),
 ('Résultat',           "Force>23", 92, 96),
 ('Résultat',           "Force<24", 92, 97),
-('Résultat',           "Force>23", 93, 98),
-('Résultat',           "Force<24", 93, 99),
-('Résultat',           NULL, 94,100),
-('Résultat',           NULL, 94,101),
-('Résultat',           NULL, 95,102),
-('Résultat',           NULL, 95,103),
+('Résultat',           'Agilite>=3', 93, 98),
+('Résultat',           'Agilite<=3', 93, 99),
+('Résultat',           'Puissance>=3', 94,100),
+('Résultat',           'Puissance<=3', 94,101),
+('Résultat',           'PV>=100', 95,102),
+('Résultat',           'PV<=100', 95,103),
 ('Promouvoir capitaine', NULL, 96,104),
 ('Mort héroïque',        NULL, 97,105),
 ('Devenir leader',       NULL, 98,106),
@@ -446,6 +476,7 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Répondre à la convocation',  NULL, 110, 118),
 
 -- Entrée dans les Terres Oubliées
+('Répondre a l\'appel',        NULL , 118 , 119),
 ('Acheter les informations',   'Argent>=120', 119, 120),
 ('Refuser et avancer seul',    NULL,          119, 121),
 
@@ -488,7 +519,30 @@ INSERT INTO Deboucher (choix, condition_requise, Id_histoire_source, Id_histoire
 ('Rentrer',   NULL, 126, 140),
 ('Rentrer',   NULL, 131, 141),
 ('Rentrer',   NULL, 135, 141),
-('Rentrer',   NULL, 139, 141);
+('Rentrer',   NULL, 139, 141),
+
+-- Actions réservées aux classes
+
+('Passer par les ombres', 'Classe==1 || Classe==2', 124, 148),
+('Empoisonner la créature', 'Classe==2', 125, 149),
+('Lancer un mur de glace', 'Classe==3', 128, 150),
+('Créer une explosion de feu', 'Classe==4', 128, 151),
+('Briser la porte à l\'épée lourde', 'Classe==5', 133, 152),
+('Protéger les réfugiés avec le bouclier', 'Classe==6', 123, 153),
+('Canaliser la magie dans la lame', 'Classe==7', 136, 154),
+('Chanter pour calmer la faille', 'Classe==8', 129, 155),
+('Prier pour bénir le groupe', 'Classe==9', 123, 156),
+
+-- Actions possibles seulement avec l'épée rouillée
+
+('Brandir l\'épée rouillée', 'hasObject:11', 124, 157),
+('Reconnaître les symboles de l\'épée', 'hasObject:11', 128, 158),
+('Forcer la serrure avec l\'épée', 'hasObject:11', 133, 159),
+('Défier la silhouette avec l\'ancienne lame', 'hasObject:11', 136, 160),
+('Réveiller le pouvoir caché de l\'épée', 'hasObject:11 && Puissance>=6', 160, 161),
+('L\'épée reste silencieuse', 'hasObject:11 && Puissance<6', 160, 162);
+
+
 
 -- =========================================================
 -- CLASSES
@@ -548,33 +602,33 @@ INSERT INTO Objet (id, Label, Effet) VALUES
 -- OBJETS OBTENUS PAR HISTOIRE
 -- =========================================================
 INSERT INTO obtenue (id_objet, Id_histoire) VALUES
-(1,  6),   -- Pierre du départ à l'arrivée au point de départ
-(2,  8),   -- Souvenir solo
-(3,  9),   -- Souvenir mère
-(4, 10),   -- Souvenir père
-(5, 22),   -- Pomme cueillie
-(6, 21),   -- Brume légère
-(7,56),    -- C'est froid !
-(8, 57),   -- C'est chaud !
-(9, 65),   -- Encore trop courte ?
-(10,30),   -- 20 pièces d\'or
-(11,31),   -- Épée rouillée
-(12,54),   -- Grimoire ancien (quête mage)
-(13,63),   -- Arme légendaire (quête guerrier)
-(14,72),   -- Cristal d\'équilibre (quête épéiste)
-(15,81),   -- Herbes rares (quête support)
-(16,104),  -- Insigne de capitaine
-(17,106),  -- Emblème rebelle
-(18,108),  -- Charte de paix
-(19,110),  -- Clé de l\'académie
-(20,116),  -- Bénédiction des ruines
-(21,3),    -- Amitié d'Hypnos
-(22,66),   -- Tu compte protégée quoi ?
-(23,74),   -- Défence magique sur une épée ?
-(24,75),   -- Plus de Puissance !
-(25,83),   -- Les dragons son pour toi ?
-(26,84),   -- Tu as déjà prier a un lieu incongru ?
-(27,24),   -- Dans les Méandre de l'espace temps
+(1,  6),    -- Pierre du départ à l'arrivée au point de départ
+(2,  8),    -- Souvenir solo
+(3,  9),    -- Souvenir mère
+(4, 10),    -- Souvenir père
+(5, 22),    -- Pomme cueillie
+(6, 21),    -- Brume légère
+(7,56),     -- C'est froid !
+(8, 57),    -- C'est chaud !
+(9, 65),    -- Encore trop courte ?
+(10,30),    -- 20 pièces d\'or
+(11,31),    -- Épée rouillée
+(12,54),    -- Grimoire ancien (quête mage)
+(13,63),    -- Arme légendaire (quête guerrier)
+(14,72),    -- Cristal d\'équilibre (quête épéiste)
+(15,81),    -- Herbes rares (quête support)
+(16,104),   -- Insigne de capitaine
+(17,106),   -- Emblème rebelle
+(18,108),   -- Charte de paix
+(19,110),   -- Clé de l\'académie
+(20,116),   -- Bénédiction des ruines
+(21,3),     -- Amitié d'Hypnos
+(22,66),    -- Tu compte protégée quoi ?
+(23,74),    -- Défence magique sur une épée ?
+(24,75),    -- Plus de Puissance !
+(25,83),    -- Les dragons son pour toi ?
+(26,84),    -- Tu as déjà prier a un lieu incongru ?
+(27,24),    -- Dans les Méandre de l'espace temps
 (28, 120),  -- Carte des Terres Oubliées (achat info marchand)
 (29, 123),  -- Rescapé du camp (arrêt au camp de réfugiés)
 (30, 126),  -- Ombre esquivée (fuite réussie)

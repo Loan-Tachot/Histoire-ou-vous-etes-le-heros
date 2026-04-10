@@ -41,11 +41,12 @@ class PersonnageController extends BaseController {
         if ($nom === '') { $this->redirect('index.php?page=creer_personnage&err=1'); }
 
         $succes = isset($_SESSION['succes']) ? $_SESSION['succes'] : array();
-        $_SESSION['perso_nom'] = htmlspecialchars($nom);
-        $_SESSION['chemins']   = array();
-        $_SESSION['stats']     = statsBase();
-        $_SESSION['nb_dodo']   = 0;
-        $_SESSION['succes']    = $succes;
+        $_SESSION['perso_nom']        = htmlspecialchars($nom);
+        $_SESSION['chemins']          = array();
+        $_SESSION['stats']            = statsBase();
+        $_SESSION['nb_dodo']          = 0;
+        $_SESSION['nb_visites_foret'] = 0;
+        $_SESSION['succes']           = $succes;
         $this->redirect('index.php?page=jeu&histoire=1');
     }
 }
@@ -65,10 +66,14 @@ class JeuController extends BaseController {
         $this->requireSession();
         $this->requireReferer();
 
+        // Nouvelle partie
         if (isset($_GET['reset'])) {
             $succes = isset($_SESSION['succes']) ? $_SESSION['succes'] : array();
-            $_SESSION['chemins'] = array(); $_SESSION['stats'] = statsBase();
-            $_SESSION['nb_dodo'] = 0;       $_SESSION['succes'] = $succes;
+            $_SESSION['chemins']          = array();
+            $_SESSION['stats']            = statsBase();
+            $_SESSION['nb_dodo']          = 0;
+            $_SESSION['nb_visites_foret'] = 0;
+            $_SESSION['succes']           = $succes;
             $this->redirect('index.php?page=jeu&histoire=1');
             return;
         }
@@ -78,6 +83,13 @@ class JeuController extends BaseController {
 
         if (!in_array($idH, $_SESSION['chemins'])) {
             $_SESSION['chemins'][] = $idH;
+
+            // Incrémenter le compteur forêt à chaque nouvelle entrée (h12)
+            if ($idH === 12) {
+                $_SESSION['nb_visites_foret'] = isset($_SESSION['nb_visites_foret'])
+                    ? $_SESSION['nb_visites_foret'] + 1 : 1;
+            }
+
             $anciens           = $_SESSION['stats'];
             $_SESSION['stats'] = calculerStats($this->pdo, $_SESSION['chemins']);
             foreach ($_SESSION['stats'] as $cle => $val) {
@@ -112,12 +124,16 @@ class JeuController extends BaseController {
         if (!$dest) { $this->redirect('index.php?page=jeu&histoire=1'); return; }
 
         $idDest = (int)$dest['Id_histoire_destination'];
+
+        // Retour à la phase de sommeil → réinitialisation (succès conservés)
         if (in_array($idDest, array(1, 2))) {
-            $_SESSION['nb_dodo'] = (isset($_SESSION['nb_dodo']) ? $_SESSION['nb_dodo'] : 0) + 1;
-            $_SESSION['chemins'] = array();
-            $_SESSION['stats']   = statsBase();
+            $_SESSION['nb_dodo']          = (isset($_SESSION['nb_dodo']) ? $_SESSION['nb_dodo'] : 0) + 1;
+            $_SESSION['chemins']          = array();
+            $_SESSION['stats']            = statsBase();
+            $_SESSION['nb_visites_foret'] = 0;
             if ($_SESSION['nb_dodo'] >= 20) { $this->redirect('index.php?page=jeu&histoire=3'); return; }
         }
+
         $this->redirect('index.php?page=jeu&histoire=' . $idDest);
     }
 }
@@ -129,6 +145,9 @@ class SuccesController extends BaseController {
     public function index() {
         $this->requireSession();
         $this->requireReferer();
-        $this->render('succes', array('succes' => $this->objets->getSucces(), 'total' => $this->objets->getTotalSucces()));
+        $this->render('succes', array(
+            'succes' => $this->objets->getSucces(),
+            'total'  => $this->objets->getTotalSucces(),
+        ));
     }
 }

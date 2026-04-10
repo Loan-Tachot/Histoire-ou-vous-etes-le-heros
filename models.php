@@ -71,8 +71,9 @@ function calculerStats($pdo, $chemins) {
 // ── Évalue une condition de stat ─────────────────────────────
 // Formats supportés :
 //   Force>=8        PM<8        Agi>4       PM>Force    Force==PM
-//   nonVisited:26   visible seulement si l'histoire 26 n'a PAS été visitée
-//   visited:12      visible seulement si l'histoire 12 A déjà été visitée
+//   nonVisited:26   visible si l'histoire 26 n'a PAS été visitée
+//   visited:12      visible si l'histoire 12 A déjà été visitée
+//   foretVisites>=2 visible si la forêt a été visitée 2 fois ou plus
 function evaluerCondition($condition, $stats) {
     if (empty($condition)) return true;
 
@@ -88,6 +89,15 @@ function evaluerCondition($condition, $stats) {
     if (strpos($condition, 'visited:') === 0) {
         $idHistoire = (int) substr($condition, strlen('visited:'));
         return in_array($idHistoire, $chemins);
+    }
+
+    // Condition : nombre de visites de la forêt (h12 = entrée forêt)
+    // foretVisites est incrémenté dans controllers.php à chaque visite de h12
+    if (strpos($condition, 'foretVisites') !== false) {
+        $nb = isset($_SESSION['nb_visites_foret']) ? $_SESSION['nb_visites_foret'] : 0;
+        $expr = str_replace('foretVisites', $nb, $condition);
+        if (!preg_match('/^[\d\s<>=!]+$/', $expr)) return false;
+        return eval("return ($expr);");
     }
 
     $expr = $condition;
@@ -154,66 +164,49 @@ class Classe {
 }
 
 // ── Objet / Succès ───────────────────────────────────────────
-// Les objets de la BDD sont utilisés comme succès.
-// Ils sont stockés dans $_SESSION['succes'] sous la forme :
-//   [ id_objet => date_deblocage, ... ]
-// Cette clé de session n'est JAMAIS réinitialisée entre les parties.
 class Objet {
     private $pdo;
     public function __construct($pdo) { $this->pdo = $pdo; }
 
-    // Retourne tous les objets (pour la page monde)
     public function getAll() {
         if (!$this->pdo) return array();
-        return $this->pdo->query(
-            "SELECT id, Label, Effet FROM Objet ORDER BY id ASC"
-        )->fetchAll();
+        return $this->pdo->query("SELECT id, Label, Effet FROM Objet ORDER BY id ASC")->fetchAll();
     }
 
-    // Retourne tous les succès débloqués avec leur date
     public function getSucces() {
         if (!$this->pdo) return array();
         $ids = isset($_SESSION['succes']) ? array_keys($_SESSION['succes']) : array();
         if (empty($ids)) return array();
 
         $placeholders = implode(',', array_fill(0, count($ids), '?'));
-        $s = $this->pdo->prepare(
-            "SELECT id, Label, Effet FROM Objet WHERE id IN ($placeholders)"
-        );
+        $s = $this->pdo->prepare("SELECT id, Label, Effet FROM Objet WHERE id IN ($placeholders)");
         $s->execute($ids);
         $objets = $s->fetchAll();
 
         foreach ($objets as &$o) {
-            $o['debloque_le'] = isset($_SESSION['succes'][$o['id']])
-                ? $_SESSION['succes'][$o['id']] : '';
+            $o['debloque_le'] = isset($_SESSION['succes'][$o['id']]) ? $_SESSION['succes'][$o['id']] : '';
         }
         return $objets;
     }
 
-    // Retourne le total des succès disponibles dans la BDD
     public function getTotalSucces() {
         if (!$this->pdo) return 0;
         return (int) $this->pdo->query("SELECT COUNT(*) FROM Objet")->fetchColumn();
     }
 
-    // Détecte et enregistre les nouveaux succès débloqués par les chemins donnés
-    // Retourne uniquement ceux qui viennent d'être débloqués (pour la notification)
     public function enregistrerNouveauxSucces($chemins) {
         if (!$this->pdo || empty($chemins)) return array();
 
         $placeholders = implode(',', array_fill(0, count($chemins), '?'));
         $s = $this->pdo->prepare(
-            "SELECT o.id, o.Label, o.Effet
-             FROM Objet o
+            "SELECT o.id, o.Label, o.Effet FROM Objet o
              JOIN obtenue ob ON o.id = ob.id_objet
              WHERE ob.Id_histoire IN ($placeholders)"
         );
         $s->execute($chemins);
         $tous = $s->fetchAll();
 
-        if (!isset($_SESSION['succes'])) {
-            $_SESSION['succes'] = array();
-        }
+        if (!isset($_SESSION['succes'])) $_SESSION['succes'] = array();
 
         $nouveaux = array();
         foreach ($tous as $o) {
